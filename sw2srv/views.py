@@ -6,13 +6,7 @@ from functools import wraps
 
 import ldap
 import logging
-import logging.handlers
 
-syslog = logging.handlers.SysLogHandler( address='/dev/log' )
-syslog.setLevel(logging.WARNING)
-server.logger.addHandler(syslog)
-
-server.logger.setLevel(logging.DEBUG)
 logging.debug('starting app')
 
 def check_auth(username, password):
@@ -58,5 +52,6 @@ def ping():
 @server.route("/swift/account/<acct_name>")
 @requires_auth
 def auth(acct_name):
-    logging.debug( 'verifying user %s for account %s', username, acct_name )
+    server.logger.setLevel(logging.DEBUG)
+    logging.debug( 'verifying user %s for account %s', request.authorization.username, acct_name )
     return 'acct_name: %s' % acct_name
