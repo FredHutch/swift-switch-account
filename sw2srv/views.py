@@ -5,6 +5,15 @@ from flask import request, Response
 from functools import wraps
 
 import ldap
+import logging
+import logging.handlers
+
+syslog = logging.handlers.SysLogHandler( address='/dev/log' )
+syslog.setLevel(logging.WARNING)
+server.logger.addHandler(syslog)
+
+server.logger.setLevel(logging.DEBUG)
+logging.debug('starting app')
 
 def check_auth(username, password):
     """This function is called to check if a username /
@@ -19,8 +28,9 @@ def check_auth(username, password):
         conn = ldap.initialize( "ldap://dc.fhcrc.org" )
         conn.set_option( ldap.OPT_REFERRALS, 0 )
         conn.simple_bind_s( username, password )
+        logging.debug( 'successful login from %s', username )
     except ldap.INVALID_CREDENTIALS:
-        print "invalid credentials"
+        logging.error( 'failed login from %s', username )
         return False
 
     return True
