@@ -3,7 +3,7 @@
 from sw2srv import server
 from sw2srv import config
 
-from flask import request, Response
+from flask import request, Response, jsonify
 from functools import wraps
 
 import ldap
@@ -80,8 +80,16 @@ def auth(acct_name):
     princ_groups = results[0][1]['memberOf']
 
     if group_dn in princ_groups:
-        return "account,pass,key\n"
+        creds = {}
+        creds['account'] = acct_name
+        creds['password'] = '12345'
+        creds['key'] = 'abcdefg'
 
-    return 'not member of group %s' % group_name
+        r = jsonify(creds)
+        r.status_code = 200
+
+        return r
+
+    return 'not member of group %s\n' % group_name
 
 
