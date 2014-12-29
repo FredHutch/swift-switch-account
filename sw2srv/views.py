@@ -53,5 +53,34 @@ def ping():
 @requires_auth
 def auth(acct_name):
     server.logger.setLevel(logging.DEBUG)
-    logging.debug( 'verifying user %s for account %s', request.authorization.username, acct_name )
-    return 'acct_name: %s' % acct_name
+    username = request.authorization.username
+    password = request.authorization.password
+    logging.debug( 'verifying user %s for account %s', username, acct_name )
+    # Authentication assumed good at this point... now lookup 
+    # account name/group combination in ad and check membership:
+    # format: user_f_grp
+    base = "dc=fhcrc,dc=org"
+    scope = ldap.SCOPE_SUBTREE
+    connect_as = "%s@fhcrc.org" % username
+    conn = ldap.initialize( "ldap://dc.fhcrc.org" )
+    conn.set_option( ldap.OPT_REFERRALS, 0 )
+    conn.simple_bind_s( connect_as, password )
+
+    # get DN for principal
+    filter = "(userPrincipalName=%s@fhcrc.org)" % username
+    results = conn.search_s( base, scope, filter )
+    princ_dn = results[0][0]
+
+    # check DN in member
+    group_name = "%s_grp" % acct_name
+    filter = "(&(sAMAccountName=%s)(objectCategory=group))" % group_name
+    results = conn.search_s( base, scope, filter )
+
+    grp_members = results[0][1]['member']
+
+    if princ_dn in grp_members:
+            return results[0][1]['sAMAccountName'][0]
+
+    return 'not member of group %s' % group_name
+
+
