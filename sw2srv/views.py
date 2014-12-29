@@ -55,7 +55,8 @@ def requires_auth(f):
 def ping():
     return 'alive'
 
-@server.route("/auth")
+@server.route("/swift/account/<acct_name>")
 @requires_auth
-def auth():
-    return 'authenticated'
+def auth(acct_name):
+    logging.debug( 'verifying user %s for account %s', username, acct_name )
+    return 'acct_name: %s' % acct_name
