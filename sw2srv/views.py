@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from sw2srv import server
+from sw2srv import config
+
 from flask import request, Response
 from functools import wraps
 
@@ -13,13 +15,13 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    base = "dc=fhcrc,dc=org"
+    base = config.base
     scope = ldap.SCOPE_SUBTREE
 
     username = '%s@fhcrc.org' % username
 
     try:
-        conn = ldap.initialize( "ldap://dc.fhcrc.org" )
+        conn = ldap.initialize( config.ldap_url )
         conn.set_option( ldap.OPT_REFERRALS, 0 )
         conn.simple_bind_s( username, password )
         logging.debug( 'successful login from %s', username )
@@ -59,10 +61,10 @@ def auth(acct_name):
     # Authentication assumed good at this point... now lookup 
     # account name/group combination in ad and check membership:
     # format: user_f_grp
-    base = "dc=fhcrc,dc=org"
+    base = config.base
     scope = ldap.SCOPE_SUBTREE
     connect_as = "%s@fhcrc.org" % username
-    conn = ldap.initialize( "ldap://dc.fhcrc.org" )
+    conn = ldap.initialize( config.ldap_url )
     conn.set_option( ldap.OPT_REFERRALS, 0 )
     conn.simple_bind_s( connect_as, password )
 
@@ -78,7 +80,7 @@ def auth(acct_name):
     princ_groups = results[0][1]['memberOf']
 
     if group_dn in princ_groups:
-        return "account,pass,key"
+        return "account,pass,key\n"
 
     return 'not member of group %s' % group_name
 

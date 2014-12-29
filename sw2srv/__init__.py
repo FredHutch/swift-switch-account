@@ -4,6 +4,7 @@ from flask import Flask
 import logging
 import logging.handlers
 
+
 server = Flask(__name__)
 
 #syslog = logging.handlers.SysLogHandler( address='/dev/log' )

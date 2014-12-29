@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 from sw2srv import server
+from sw2srv import config
 
-server.run(
-    debug = True,
-    ssl_context = (
-        '/home/mrg/Work/swift-switch-account/certs/test.crt',
-        '/home/mrg/Work/swift-switch-account/certs/test.key'
+if config.use_ssl:
+    server.run(
+        debug = config.debug,
+        ssl_context = ( config.cert, config.key )
+    )
+else:
+    server.run(
+        debug = config.debug,
     )
 
-)
