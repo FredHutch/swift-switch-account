@@ -4,11 +4,26 @@ from sw2srv import server
 from flask import request, Response
 from functools import wraps
 
+import ldap
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == 'admin' and password == 'secret'
+    base = "dc=fhcrc,dc=org"
+    scope = ldap.SCOPE_SUBTREE
+
+    username = '%s@fhcrc.org' % username
+
+    try:
+        conn = ldap.initialize( "ldap://dc.fhcrc.org" )
+        conn.set_option( ldap.OPT_REFERRALS, 0 )
+        conn.simple_bind_s( username, password )
+    except ldap.INVALID_CREDENTIALS:
+        print "invalid credentials"
+        return False
+
+    return True
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
