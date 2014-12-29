@@ -8,6 +8,7 @@ from functools import wraps
 
 import ldap
 import logging
+import csv
 
 logging.debug('starting app')
 
@@ -79,16 +80,18 @@ def auth(acct_name):
     results = conn.search_s( base, scope, filter )
     princ_groups = results[0][1]['memberOf']
 
+    r = ""
+
     if group_dn in princ_groups:
-        creds = {}
-        creds['account'] = acct_name
-        creds['password'] = '12345'
-        creds['key'] = 'abcdefg'
-
-        r = jsonify(creds)
-        r.status_code = 200
-
-        return r
+        with open( config.keyfile, 'rb' ) as keyfile:
+            creds = csv.DictReader(keyfile, fieldnames = config.key_fields )
+            for cred in creds:
+                if cred['account'] == acct_name:
+                    r = jsonify(cred)
+                    r.status_code = 200
+                    return r
+            if r == "":
+                return 'no credentials for account %s\n' % acct_name
 
     return 'not member of group %s\n' % group_name
 

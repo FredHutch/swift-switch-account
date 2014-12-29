@@ -4,6 +4,14 @@
 # A basic configuration file.  Write as python.  Changing values here
 # requires restarting the flask server when its not run in debug mode.
 
+# KEYFILE
+
+# path to csv file containing key data
+keyfile = '/home/mrg/Work/swift-switch-account/keys.csv'
+
+# Order of account, password, and key in file as tuple/list
+key_fields = ('account','password','key')
+
 # LDAP CONFIGS
 
 # LDAP search base
