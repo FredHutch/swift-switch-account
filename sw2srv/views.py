@@ -66,20 +66,19 @@ def auth(acct_name):
     conn.set_option( ldap.OPT_REFERRALS, 0 )
     conn.simple_bind_s( connect_as, password )
 
-    # get DN for principal
-    filter = "(userPrincipalName=%s@fhcrc.org)" % username
-    results = conn.search_s( base, scope, filter )
-    princ_dn = results[0][0]
-
-    # check DN in member
+    # get DN for requested group
     group_name = "%s_grp" % acct_name
     filter = "(&(sAMAccountName=%s)(objectCategory=group))" % group_name
     results = conn.search_s( base, scope, filter )
+    group_dn = results[0][1]['distinguishedName'][0]
 
-    grp_members = results[0][1]['member']
+    # check group DN in memberOf for principal
+    filter = "(userPrincipalName=%s@fhcrc.org)" % username
+    results = conn.search_s( base, scope, filter )
+    princ_groups = results[0][1]['memberOf']
 
-    if princ_dn in grp_members:
-            return results[0][1]['sAMAccountName'][0]
+    if group_dn in princ_groups:
+        return "account,pass,key"
 
     return 'not member of group %s' % group_name
 
