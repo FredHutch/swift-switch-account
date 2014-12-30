@@ -55,4 +55,5 @@ target/
 
 certs/test.crt
 certs/test.key
-
+sw2srv/config.py
+keys.csv

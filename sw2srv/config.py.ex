@@ -7,7 +7,10 @@
 # KEYFILE
 
 # path to csv file containing key data
-keyfile = '/home/mrg/Work/swift-switch-account/keys.csv'
+keyfile = '/home/mrg/swift-switch-account/keys.csv'
+
+# Interfaces to listen on:
+host = '0.0.0.0'
 
 # Order of account, password, and key in file as tuple/list
 key_fields = ('account','password','key')
@@ -30,6 +33,6 @@ debug = True
 use_ssl = True
 
 # Certificate and key file for Flask SSL
-cert = '/home/mrg/Work/swift-switch-account/certs/test.crt'
-key = '/home/mrg/Work/swift-switch-account/certs/test.key'
+cert = '/home/mrg/swift-switch-account/certs/test.crt'
+key = '/home/mrg/swift-switch-account/certs/test.key'
 
