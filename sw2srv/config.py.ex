@@ -11,6 +11,7 @@ keyfile = '/home/mrg/swift-switch-account/keys.csv'
 
 # Interfaces to listen on:
 host = '0.0.0.0'
+port = 5000
 
 # Order of account, password, and key in file as tuple/list
 key_fields = ('account','password','key')
