@@ -86,7 +86,7 @@ def auth(acct_name):
         with open( config.keyfile, 'rb' ) as keyfile:
             creds = csv.DictReader(keyfile, fieldnames = config.key_fields )
             for cred in creds:
-                if cred['account'] == acct_name:
+                if cred['account'] == 'Swift_{}'.format(acct_name):
                     r = jsonify(cred)
                     r.status_code = 200
                     return r
