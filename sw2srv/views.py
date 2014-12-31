@@ -79,24 +79,27 @@ def auth(acct_name):
     group_managed_by = results[0][1]['managedBy']
 
     # check if principal has memberOf for the group
-    server.logger.error("checking %s vs %s", username, group_dn )
+    server.logger.debug("checking %s vs %s", username, group_dn )
     filter = "(&(userPrincipalName={}@fhcrc.org)(memberOf={}))".format(
         username, group_dn ) 
-    server.logger.error("%s", filter )
+    server.logger.debug("%s", filter )
     results = conn.search_s( base, scope, filter )
     if len(results) == 2:
         is_ok = True
+        server.logger.debug("Allowing access based on membership in group")
 
     # get group managedBy entity
-    server.logger.error("checking %s vs %s", username, group_managed_by )
+    server.logger.debug("checking %s vs %s", username, group_managed_by )
     filter = "(&(userPrincipalName={}@fhcrc.org)(memberOf={}))".format(
         username, group_managed_by )
-    server.logger.error("%s", filter )
+    server.logger.debug("%s", filter )
     results = conn.search_s( base, scope, filter )
     if len(results) == 2:
         is_ok = True
+        server.logger.debug("Allowing access based on membership in managing group")
 
     if is_ok:
+        server.logger.debug("returning credential")
         r = ""
         with open( config.keyfile, 'rb' ) as keyfile:
             creds = csv.DictReader(keyfile, fieldnames = config.key_fields )
