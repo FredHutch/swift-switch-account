@@ -12,9 +12,9 @@ the Swift account they wish to access.  Given successful
 authentication of the credentials and authorization to the account,
 the client will set the environment variables:
 
-    - `ST_AUTH`
-    - `ST_USER`
-    - `ST_KEY`
+- `ST_AUTH`
+- `ST_USER`
+- `ST_KEY`
 
 with values appropriate for the Swift account.  If the client is
 instructed to persist these environment variables, the client will
@@ -54,9 +54,9 @@ JSON response to the client with an HTTP status code of 200.
 Minimally the client will set Swift environment variables for the
 current session:
 
-    - `ST_AUTH`
-    - `ST_USER`
-    - `ST_KEY`
+- `ST_AUTH`
+- `ST_USER`
+- `ST_KEY`
 
 If instructed, the client will write/over-write a file named
 `.swiftrc` in the current user's home directory and instruct the user
@@ -66,25 +66,24 @@ how to update startup files to persist these values across sessions.
 
 ### Bad login credentials:
 
-    - server returns 401 and empty response
-    - client indicates login failure on terminal and non-zero exit
+- server returns 401 and empty response
+- client indicates login failure on terminal and non-zero exit
 
 ### User not a member of appropriate groups
 
-    - server returns 403 and empty response
-    - client indicates that user does not have access to group
-      and sets non-zero exit code.
+- server returns 403 and empty response
+- client indicates that user does not have access to group
+  and sets non-zero exit code.
 
 ### Swift Group/Account does not exist (i.e. no key)
 
-    - server returns 404 and JSON encoded error message
-    - client relays error message to terminal and non-zero exit
+- server returns 404 and JSON encoded error message
+- client relays error message to terminal and non-zero exit
 
 ### LDAP connection errors
 
-    - server returns 500
-    - client indicates service unavailable
-
+- server returns 500
+- client indicates service unavailable
 
 ## Authorization Logic
 
