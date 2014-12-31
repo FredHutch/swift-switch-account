@@ -58,6 +58,8 @@ def auth(acct_name):
     server.logger.setLevel(logging.DEBUG)
     username = request.authorization.username
     password = request.authorization.password
+    is_ok = False
+
     logging.debug( 'verifying user %s for account %s', username, acct_name )
     # Authentication assumed good at this point... now lookup 
     # account name/group combination in ad and check membership:
@@ -74,15 +76,28 @@ def auth(acct_name):
     filter = "(&(sAMAccountName=%s)(objectCategory=group))" % group_name
     results = conn.search_s( base, scope, filter )
     group_dn = results[0][1]['distinguishedName'][0]
+    group_managed_by = results[0][1]['managedBy']
 
-    # check group DN in memberOf for principal
-    filter = "(userPrincipalName=%s@fhcrc.org)" % username
+    # check if principal has memberOf for the group
+    server.logger.error("checking %s vs %s", username, group_dn )
+    filter = "(&(userPrincipalName={}@fhcrc.org)(memberOf={}))".format(
+        username, group_dn ) 
+    server.logger.error("%s", filter )
     results = conn.search_s( base, scope, filter )
-    princ_groups = results[0][1]['memberOf']
+    if len(results) == 2:
+        is_ok = True
 
-    r = ""
+    # get group managedBy entity
+    server.logger.error("checking %s vs %s", username, group_managed_by )
+    filter = "(&(userPrincipalName={}@fhcrc.org)(memberOf={}))".format(
+        username, group_managed_by )
+    server.logger.error("%s", filter )
+    results = conn.search_s( base, scope, filter )
+    if len(results) == 2:
+        is_ok = True
 
-    if group_dn in princ_groups:
+    if is_ok:
+        r = ""
         with open( config.keyfile, 'rb' ) as keyfile:
             creds = csv.DictReader(keyfile, fieldnames = config.key_fields )
             for cred in creds:
