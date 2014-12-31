@@ -4,12 +4,14 @@ from flask import Flask
 import logging
 import logging.handlers
 
-
 server = Flask(__name__)
 
-#syslog = logging.handlers.SysLogHandler( address='/dev/log' )
-#syslog.setLevel(logging.WARNING)
-#server.logger.addHandler(syslog)
+syslog = logging.handlers.SysLogHandler( address='/dev/log' )
+syslog.setFormatter(
+    logging.Formatter( 'sw2srv: %(levelname)s %(message)s')
+)
+syslog.setLevel(logging.DEBUG)
+server.logger.addHandler(syslog)
 
 server.logger.setLevel(logging.DEBUG)
 
