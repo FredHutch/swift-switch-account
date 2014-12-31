@@ -45,11 +45,11 @@ containing the Swift account name.
 If the credential pass authentication (to the directory) the server
 then parses this request.  The authorization group is built by
 appending `_grp` to the account name (e.g. `foo_b_grp`).  The server
-checks authorization (see [Authorization Logic](#authlogic)) for this
-group and if successful, looks up the Swift account credentials stored
-in a text file on the server.  These credentials (the Swift auth URL,
-user account, and S3 key) are then encoded as a JSON response to the
-client with an HTTP status code of 200.
+checks authorization (see [Authorization Logic](#authorization-logic))
+for this group and if successful, looks up the Swift account
+credentials stored in a text file on the server.  These credentials
+(the Swift auth URL, user account, and S3 key) are then encoded as a
+JSON response to the client with an HTTP status code of 200.
 
 Minimally the client will set Swift environment variables for the
 current session:
@@ -86,7 +86,7 @@ how to update startup files to persist these values across sessions.
     - client indicates service unavailable
 
 
-## <a name="authlogic"></a>Authorization Logic
+## Authorization Logic
 
 Authorization for an account is controlled by a user's membership in
 an eponymous group or in the eponymous group's `managedBy` entity.
