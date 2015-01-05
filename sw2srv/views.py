@@ -55,6 +55,18 @@ def requires_auth(f):
 def ping():
     return 'alive'
 
+@server.route("/test")
+def test(acct_name='test_a'):
+    cred = {
+        'account': 'Swift_test_a',
+        'key': 'gobbledegook',
+        'password': 'isasecret'
+    }
+
+    r = jsonify( cred )
+    return r
+
+
 @server.route("/swift/account/<acct_name>")
 @requires_auth
 def auth(acct_name):
