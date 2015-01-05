@@ -27,7 +27,9 @@ Swift environment variables and the `.swiftrc` file are left as-is.
 
 ## Use
 
-TBD
+`sw2switch [--server-url=<url>] [--persist] <account>`
+
+Put appropriate Swift credentials into current user's environment for Swift account `account`.  If `--persist` is specified, Swift credentials will be written into a file named `.swiftrc` in the user's home directory.
 
 # Internals
 
@@ -57,6 +59,12 @@ current session:
 - `ST_AUTH`
 - `ST_USER`
 - `ST_KEY`
+
+Setting these environment variables is done via a bit of sleight-of-hand
+stolen from Modules.  The user must source the init file appropriate for
+her shell which installs `sw2switch` as a function.  This function
+uses eval to run the script which produces bash-like functions as its
+output.
 
 If instructed, the client will write/over-write a file named
 `.swiftrc` in the current user's home directory and instruct the user
