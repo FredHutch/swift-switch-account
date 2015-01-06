@@ -9,7 +9,6 @@ import requests
 import getpass
 
 def sh( creds, persist ):
-    export = "ST_AUTH={} ; export ST_AUTH ;".format( creds['url'] )
     export = (
         export + "ST_USER={} ; export ST_USER ;".format( creds['account'] )
     )
@@ -23,7 +22,6 @@ def sh( creds, persist ):
         logging.error( "writing to .swiftrc not implemented yet!" )
 
 def csh( creds, persist ):
-    export = "setenv ST_AUTH={} ; ".format( creds['url'] )
     export = (
         export + "setenv ST_USER={} ; ".format( creds['account'] )
     )
@@ -132,7 +130,9 @@ if __name__ == "__main__":
         )
     else:
         logging.error(
-            "error retrieving credentials ({}) from server".format( r.status_code )
+            "error {} retrieving credentials from server".format(
+                r.status_code
+            )
         )
 
 

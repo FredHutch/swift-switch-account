@@ -12,14 +12,16 @@ the Swift account they wish to access.  Given successful
 authentication of the credentials and authorization to the account,
 the client will set the environment variables:
 
-- `ST_AUTH`
 - `ST_USER`
 - `ST_KEY`
 
 with values appropriate for the Swift account.  If the client is
 instructed to persist these environment variables, the client will
-write a file called `.swiftrc` with appropriate shell commands to
-enable use of the `.swiftrc` in shell startup files.
+write a file called `.swiftrc` (or `.swift.cshrc` for C shell
+variants) that can be read in by the shell.
+
+Note that `ST_AUTH` (with the Swift authorization URL) is not set by
+either this script nor is it written to a swiftrc file.
 
 If either authorization or authentication fail, the user is notified
 with an appropriate error message indicating the cause.  Existing
@@ -29,7 +31,17 @@ Swift environment variables and the `.swiftrc` file are left as-is.
 
 `sw2switch [--server-url=<url>] [--persist] <account>`
 
-Put appropriate Swift credentials into current user's environment for Swift account `account`.  If `--persist` is specified, Swift credentials will be written into a file named `.swiftrc` in the user's home directory.
+Put appropriate Swift credentials into current user's environment for
+Swift account `account`.  If `--persist` is specified, Swift
+credentials will be written into a file in the user's home directory.
+
+# Install and Setup
+
+## Shell Logins
+
+Since the script must update the current shell environment, it's
+necessary to configure either the user's login or the global
+(/etc/profile\*) startup files. 
 
 # Internals
 
@@ -56,7 +68,6 @@ JSON response to the client with an HTTP status code of 200.
 Minimally the client will set Swift environment variables for the
 current session:
 
-- `ST_AUTH`
 - `ST_USER`
 - `ST_KEY`
 
@@ -66,9 +77,8 @@ her shell which installs `sw2switch` as a function.  This function
 uses eval to run the script which produces bash-like functions as its
 output.
 
-If instructed, the client will write/over-write a file named
-`.swiftrc` in the current user's home directory and instruct the user
-how to update startup files to persist these values across sessions.
+If instructed, the client will write/over-write a file in the current
+user's home directory.
 
 ## Errors:
 
@@ -107,3 +117,5 @@ member of the group managing the group `foo_b_grp` using the same
 If either check succeeds, the credentials for the requested account
 are returned.
 
+
+/* vim: set textwidth=70 : */
