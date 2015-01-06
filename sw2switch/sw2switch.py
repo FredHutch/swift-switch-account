@@ -8,10 +8,52 @@ import sys
 import requests
 import getpass
 
+def sh( creds, persist ):
+    export = "ST_AUTH={} ; export ST_AUTH ;".format( creds['url'] )
+    export = (
+        export + "ST_USER={} ; export ST_USER ;".format( creds['account'] )
+    )
+    export = (
+        export + "ST_KEY={} ; export ST_KEY".format( creds['password'] )
+    )
+    print export
+    if persist:
+        rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
+        logging.debug( "writing to {}".format( rcfile ) )
+        logging.error( "writing to .swiftrc not implemented yet!" )
+
+def csh( creds, persist ):
+    export = "setenv ST_AUTH={} ; ".format( creds['url'] )
+    export = (
+        export + "setenv ST_USER={} ; ".format( creds['account'] )
+    )
+    export = (
+        export + "setenv ST_KEY={} ;".format( creds['password'] )
+    )
+    print export
+    if persist:
+        rcfile = os.environ[ 'HOME' ] + "/.swift.cshrc"
+        logging.debug( "writing to {}".format( rcfile ) )
+        logging.error( "writing to .swift.cshrc not implemented yet!" )
+
+shell_output = {
+    'sh': sh,
+    'ksh': sh,
+    'bash': sh,
+    'zsh': sh,
+    'csh': csh,
+    'tcsh': csh
+}
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
+    parser.add_argument(
+        'shell',
+        help = "format output for shell <shell>",
+        choices = shell_output.keys()
+    )
     parser.add_argument(
         'account',
         help = "retrieve credentials for account <account>"
@@ -22,14 +64,22 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '--persist',
-        default = False,
+        dest = 'persist',
+        action = 'store_true',
         help = "write credentials to $HOME/.swiftrc"
+    )
+    parser.add_argument(
+        '--no-persist',
+        dest = 'persist',
+        action = 'store_false',
+        help = "do not write credentials to $HOME/.swiftrc"
     )
     parser.add_argument(
         '--debug',
         action = "store_true",
         help = "log level for client"
     )
+    parser.set_defaults( persist=False )
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
@@ -68,21 +118,17 @@ if __name__ == "__main__":
         )
 
         creds['url'] = 'https://tin/some/crap'
-
-        export = "ST_AUTH={} ; export ST_AUTH ;".format( creds['url'] )
-        export = (
-            export + "ST_USER={} ; export ST_USER ;".format( creds['account'] )
-        )
-        export = (
-            export + "ST_KEY={} ; export ST_KEY".format( creds['password'] )
-        )
-        print export
-        
-        
+        shell_output[ args.shell ](creds,args.persist)
 
     elif r.status_code == 401:
         logging.error(
             "invalid username/password supplied to server"
+        )
+    elif r.status_code == 403:
+        logging.error(
+            "user {} is not permitted to use {} ({})".format(
+                user, account, r.status_code
+            )
         )
     else:
         logging.error(

@@ -1,5 +1,5 @@
 sw2switch () {
-    eval `/home/mrg/swift-switch-account/sw2switch/sw2switch.py $* ;`
+    eval `/home/mrg/swift-switch-account/sw2switch/sw2switch.py bash $* ;`
 }
 
 SW2_URL="https://toolbox.fhcrc.org/sw2srv/swift/account"
