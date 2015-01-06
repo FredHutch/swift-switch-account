@@ -7,7 +7,7 @@
 # KEYFILE
 
 # path to csv file containing key data
-keyfile = '/home/mrg/swift-switch-account/keys.csv'
+keyfile = '/path/to/keys.csv'
 
 # Interfaces to listen on:
 host = '0.0.0.0'
@@ -19,10 +19,10 @@ key_fields = ('account','password','key')
 # LDAP CONFIGS
 
 # LDAP search base
-base = "dc=fhcrc,dc=org"
+base = "dc=base,dc=org"
 
 # URI for LDAP server
-ldap_url = "ldaps://dc.fhcrc.org"
+ldap_url = "ldaps://ldap.foo.org"
 
 # Run flask in debug mode
 debug = True
@@ -34,6 +34,6 @@ debug = True
 use_ssl = True
 
 # Certificate and key file for Flask SSL
-cert = '/home/mrg/swift-switch-account/certs/test.crt'
-key = '/home/mrg/swift-switch-account/certs/test.key'
+cert = '/path/to/certs/test.crt'
+key = '/path/to/certs/test.key'
 

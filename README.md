@@ -37,7 +37,7 @@ credentials will be written into a file in the user's home directory.
 
 # Install and Setup
 
-## Shell Environment
+## Shell Environment for sw2switch
 
 The environment variable `SW2_AUTH` indicates the root URL where the
 script can find the sw2server process. 
@@ -53,6 +53,63 @@ sw2switch () {
  eval `/path/to/sw2switch.py bash $*; `
 }
 ```
+
+How to implement this is site and shell specific.  For bash, if a site
+wanted these set for all users logging into a system, you could create
+a file `/etc/profile.d/sw2switch` which contained both the definition
+of that function and an appropriate value for `SW2_AUTH`.
+
+## Configuring sw2 server components
+
+Retreive the code into a suitable location (`/var/www/sw2srv` for
+example).  Configure the application from the template- it's basic
+python, most parameters are fairly self-explanatory.
+
+`keyfile` is important: set this to the location of the file
+containing the Swift certificates.  Set `key_fields` to indicate the
+order of the fields in the csv file.
+
+If you want to use dummy certificates, the Makefile in the `certs`
+subdirectory contains the necessary commands to make some self-signed
+certs suitable for testing.
+
+## Configure Apache, SSL, and WSGI:
+
+```
+<VirtualHost *:443>
+  ServerName sw2srv.fhcrc.org
+
+  ## Vhost docroot
+  DocumentRoot "/var/www/sw2srv"
+
+  <Directory "/var/www/sw2srv">
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+  ## Logging
+  ErrorLog "/var/log/apache2/sw2srv.foo.org_error_ssl.log"
+  ServerSignature Off
+  CustomLog "/var/log/apache2/sw2srv.foo.org_access_ssl.log"
+combined
+
+  ## SSL directives
+  SSLEngine on
+  SSLCertificateFile      "/etc/ssl/certs/cert.pem"
+  SSLCertificateKeyFile   "/etc/ssl/private/cert.key"
+  SSLCACertificatePath    "/etc/ssl/certs"
+  WSGIApplicationGroup ${GLOBAL}
+  WSGIDaemonProcess sw2srv processes=1 threads=2
+  WSGIProcessGroup sw2srv
+  WSGIScriptAlias /sw2srv "/var/www/sw2srv/sw2srv.wsgi"
+  WSGIPassAuthorization On
+</VirtualHost>
+```
+
+Note that WSGIPassAuthorization is necessary for this application to
+get the authentication passed through from Apache.
+
 
 
 # Internals
