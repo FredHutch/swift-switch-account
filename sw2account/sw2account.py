@@ -61,13 +61,13 @@ if __name__ == "__main__":
         help = "URL of server with account data"
     )
     parser.add_argument(
-        '--persist', '--save',
+        '--save', '--persist',
         dest = 'persist',
         action = 'store_true',
         help = "write credentials to $HOME/.swiftrc"
     )
     parser.add_argument(
-        '--no-persist', '--no-save',
+        '--no-save', '--no-persist',
         dest = 'persist',
         action = 'store_false',
         help = "do not write credentials to $HOME/.swiftrc"
