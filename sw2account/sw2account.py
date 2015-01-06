@@ -10,7 +10,7 @@ import getpass
 
 def sh( creds, persist ):
     export = (
-        export + "ST_USER={} ; export ST_USER ;".format( creds['account'] )
+        "ST_USER={} ; export ST_USER ;".format( creds['account'] )
     )
     export = (
         export + "ST_KEY={} ; export ST_KEY".format( creds['password'] )
@@ -23,7 +23,7 @@ def sh( creds, persist ):
 
 def csh( creds, persist ):
     export = (
-        export + "setenv ST_USER={} ; ".format( creds['account'] )
+        "setenv ST_USER={} ; ".format( creds['account'] )
     )
     export = (
         export + "setenv ST_KEY={} ;".format( creds['password'] )
@@ -61,13 +61,13 @@ if __name__ == "__main__":
         help = "URL of server with account data"
     )
     parser.add_argument(
-        '--persist',
+        '--persist', '--save',
         dest = 'persist',
         action = 'store_true',
         help = "write credentials to $HOME/.swiftrc"
     )
     parser.add_argument(
-        '--no-persist',
+        '--no-persist', '--no-save',
         dest = 'persist',
         action = 'store_false',
         help = "do not write credentials to $HOME/.swiftrc"
