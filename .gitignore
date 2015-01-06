@@ -59,3 +59,7 @@ sw2srv/config.py
 keys.csv
 init/swift.csh
 init/swift.sh
+debian/files
+debian/sw2.substvars
+debian/sw2/
+

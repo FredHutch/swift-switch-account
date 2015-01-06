@@ -5,3 +5,8 @@ sw2account () {
 SW2_URL="https://sw2server/path/to/sw2account"
 export SW2_URL
 
+ST_AUTH="https://endpoint/auth/v1.0"
+export ST_AUTH
+
+[ -r $HOME/.swiftrc ] && source $HOME/.swiftrc
+

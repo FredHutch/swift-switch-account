@@ -1,2 +1,7 @@
 alias sw2account 'eval `@sbindir@/sw2account.py tcsh \!*`'
 
+setenv SW2_URL "https://sw2server/path/to/sw2account"
+setenv ST_AUTH "https://endpoint/auth/v1.0"
+
+[ -r $HOME/.swiftrc ] && source $HOME/.swiftrc
+
