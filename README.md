@@ -37,11 +37,23 @@ credentials will be written into a file in the user's home directory.
 
 # Install and Setup
 
-## Shell Logins
+## Shell Environment
+
+The environment variable `SW2_AUTH` indicates the root URL where the
+script can find the sw2server process. 
 
 Since the script must update the current shell environment, it's
 necessary to configure either the user's login or the global
-(/etc/profile\*) startup files. 
+(/etc/profile\*) startup files. Thus, a function needs to be defined
+that reads the output of the `sw2switch.py` command into the current
+environment via `eval`:
+
+```bash
+sw2switch () {
+ eval `/path/to/sw2switch.py bash $*; `
+}
+```
+
 
 # Internals
 
