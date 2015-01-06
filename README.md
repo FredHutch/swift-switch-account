@@ -29,7 +29,7 @@ Swift environment variables and the `.swiftrc` file are left as-is.
 
 ## Use
 
-`sw2switch [--server-url=<url>] [--persist] <account>`
+`sw2account [--server-url=<url>] [--persist] <account>`
 
 Put appropriate Swift credentials into current user's environment for
 Swift account `account`.  If `--persist` is specified, Swift
@@ -37,7 +37,7 @@ credentials will be written into a file in the user's home directory.
 
 # Install and Setup
 
-## Shell Environment for sw2switch
+## Shell Environment for sw2account
 
 The environment variable `SW2_AUTH` indicates the root URL where the
 script can find the sw2server process. 
@@ -45,18 +45,18 @@ script can find the sw2server process.
 Since the script must update the current shell environment, it's
 necessary to configure either the user's login or the global
 (/etc/profile\*) startup files. Thus, a function needs to be defined
-that reads the output of the `sw2switch.py` command into the current
+that reads the output of the `sw2account.py` command into the current
 environment via `eval`:
 
 ```bash
-sw2switch () {
- eval `/path/to/sw2switch.py bash $*; `
+sw2account () {
+ eval `/path/to/sw2account.py bash $*; `
 }
 ```
 
 How to implement this is site and shell specific.  For bash, if a site
 wanted these set for all users logging into a system, you could create
-a file `/etc/profile.d/sw2switch` which contained both the definition
+a file `/etc/profile.d/sw2account` which contained both the definition
 of that function and an appropriate value for `SW2_AUTH`.
 
 ## Configuring sw2 server components
@@ -161,7 +161,7 @@ current session:
 
 Setting these environment variables is done via a bit of sleight-of-hand
 stolen from Modules.  The user must source the init file appropriate for
-her shell which installs `sw2switch` as a function.  This function
+her shell which installs `sw2account` as a function.  This function
 uses eval to run the script which produces bash-like functions as its
 output.
 

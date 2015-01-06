@@ -1,7 +1,7 @@
-sw2switch () {
-    eval `/path/to/sw2switch.py bash $* ;`
+sw2account () {
+    eval `/path/to/sw2account.py bash $* ;`
 }
 
-SW2_URL="https://sw2server/path/to/sw2srv"
+SW2_URL="https://sw2server/path/to/sw2account"
 export SW2_URL
 
