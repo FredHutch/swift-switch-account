@@ -19,6 +19,7 @@ def sh( creds, persist ):
         f = open( rcfile, 'w' )
         f.write( "\n".join( export ) )
         f.close()
+        os.chmod( rcfile, 0600 )
         logging.info( "saved Swift credentials" )
 
 def csh( creds, persist=False ):
@@ -32,6 +33,7 @@ def csh( creds, persist=False ):
         f = open( rcfile, 'w' )
         f.write( "\n".join( export ) )
         f.close()
+        os.chmod( rcfile, 0600 )
         logging.info( "saved Swift credentials" )
 
 shell_output = {
