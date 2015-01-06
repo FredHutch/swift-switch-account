@@ -1,0 +1,7 @@
+sw2account () {
+    eval `@sbindir@/sw2account.py bash $* ;`
+}
+
+SW2_URL="https://sw2server/path/to/sw2account"
+export SW2_URL
+

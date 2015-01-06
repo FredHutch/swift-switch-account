@@ -57,3 +57,5 @@ certs/test.crt
 certs/test.key
 sw2srv/config.py
 keys.csv
+init/swift.csh
+init/swift.sh

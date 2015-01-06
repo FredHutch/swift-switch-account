@@ -1,0 +1,15 @@
+Source: sw2
+Section: admin
+Priority: optional
+Maintainer: Michael Gutteridge <mrg@fredhutch.org>
+Build-Depends: debhelper (>= 8.0.0), python
+Standards-Version: 3.9.4
+Homepage: https://github.com/FredHutch/swift-switch-account
+#Vcs-Git: git://git.debian.org/collab-maint/sw2.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/sw2.git;a=summary
+
+Package: sw2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Description: switch swift account
+ This is the switch swift account tool

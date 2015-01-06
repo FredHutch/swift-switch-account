@@ -1,0 +1,2 @@
+alias sw2account 'eval `@sbindir@/sw2account.py tcsh \!*`'
+
