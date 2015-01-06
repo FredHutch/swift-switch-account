@@ -73,7 +73,16 @@ If you want to use dummy certificates, the Makefile in the `certs`
 subdirectory contains the necessary commands to make some self-signed
 certs suitable for testing.
 
-## Configure Apache, SSL, and WSGI:
+## Running the flask server
+
+For testing, the built-in flask server is suitable.  The server can be
+started using the "swift-switch-server.py" script.  Make sure that
+values in the configuration file are appropriate for your needs.
+
+## Running sw2srv with Apache, SSL, and WSGI:
+
+This is a fairly common stack.  Below is a sample vhost configuration
+for Apache:
 
 ```
 <VirtualHost *:443>
@@ -108,9 +117,19 @@ combined
 ```
 
 Note that WSGIPassAuthorization is necessary for this application to
-get the authentication passed through from Apache.
+get the authentication passed through from Apache.  Other WSGI
+parameters may require adjustments for your environment.
 
+The WSGI script needs to be updated with the installation location:
 
+```
+import sys
+sys.path.insert(0, '/var/www/sw2srv/sw2srv' )
+from sw2srv import server as application
+```
+
+Update the inserted path to the path where the application init is
+found.
 
 # Internals
 

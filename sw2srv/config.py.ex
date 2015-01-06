@@ -8,13 +8,22 @@
 
 # path to csv file containing key data
 keyfile = '/path/to/keys.csv'
-
-# Interfaces to listen on:
-host = '0.0.0.0'
-port = 5000
-
+#
 # Order of account, password, and key in file as tuple/list
 key_fields = ('account','password','key')
+
+# SERVER CONFIGURATION
+#
+# Interfaces to listen on when running the flask server.  Passed into
+# "run"
+host = '0.0.0.0'
+port = 5000
+debug = True
+# Use flask SSL. Not needed if this is run using Apache or other
+# web server with SSL
+use_ssl = True
+cert = '/path/to/certs/test.crt'
+key = '/path/to/certs/test.key'
 
 # LDAP CONFIGS
 
@@ -24,16 +33,5 @@ base = "dc=base,dc=org"
 # URI for LDAP server
 ldap_url = "ldaps://ldap.foo.org"
 
-# Run flask in debug mode
-debug = True
 
-# SSL CONFIGURATION
-
-# Use flask SSL. Not needed if this is run using Apache or other
-# web server with SSL
-use_ssl = True
-
-# Certificate and key file for Flask SSL
-cert = '/path/to/certs/test.crt'
-key = '/path/to/certs/test.key'
 
