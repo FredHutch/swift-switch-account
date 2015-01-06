@@ -9,30 +9,30 @@ import requests
 import getpass
 
 def sh( creds, persist ):
-    export = (
-        "ST_USER={} ; export ST_USER ;".format( creds['account'] )
-    )
-    export = (
-        export + "ST_KEY={} ; export ST_KEY".format( creds['password'] )
-    )
-    print export
+    export = []
+    export.append( "ST_USER={} ; export ST_USER".format( creds['account'] ))
+    export.append( "ST_KEY={} ; export ST_KEY".format( creds['password'] ))
+    print ";".join( export )
     if persist:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
         logging.debug( "writing to {}".format( rcfile ) )
-        logging.error( "writing to .swiftrc not implemented yet!" )
+        f = open( rcfile, 'w' )
+        f.write( "\n".join( export ) )
+        f.close()
+        logging.info( "saved Swift credentials" )
 
-def csh( creds, persist ):
-    export = (
-        "setenv ST_USER {} ; ".format( creds['account'] )
-    )
-    export = (
-        export + "setenv ST_KEY {} ;".format( creds['password'] )
-    )
-    print export
+def csh( creds, persist=False ):
+    export = []
+    export.append( "setenv ST_USER {}".format( creds['account'] ) )
+    export.append( "setenv ST_KEY {}".format( creds['password'] ) )
+    print ";".join( export )
     if persist:
         rcfile = os.environ[ 'HOME' ] + "/.swift.cshrc"
         logging.debug( "writing to {}".format( rcfile ) )
-        logging.error( "writing to .swift.cshrc not implemented yet!" )
+        f = open( rcfile, 'w' )
+        f.write( "\n".join( export ) )
+        f.close()
+        logging.info( "saved Swift credentials" )
 
 shell_output = {
     'sh': sh,
