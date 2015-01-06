@@ -23,10 +23,10 @@ def sh( creds, persist ):
 
 def csh( creds, persist ):
     export = (
-        "setenv ST_USER={} ; ".format( creds['account'] )
+        "setenv ST_USER {} ; ".format( creds['account'] )
     )
     export = (
-        export + "setenv ST_KEY={} ;".format( creds['password'] )
+        export + "setenv ST_KEY {} ;".format( creds['password'] )
     )
     print export
     if persist:
@@ -77,11 +77,28 @@ if __name__ == "__main__":
         action = "store_true",
         help = "log level for client"
     )
-    parser.set_defaults( persist=False )
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
     logging.debug( 'arguments: %s', args )
+
+    if args.shell in [ 'bash', 'ksh', 'sh', 'zsh' ]:
+        rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
+    elif args.shell in [ 'tcsh', 'csh' ]:
+        rcfile = os.environ[ 'HOME' ] + "/.swift.cshrc"
+
+    logging.debug( 'checking for rcfile: {}'.format(rcfile))
+    if not os.path.isfile( rcfile ):
+        parser.set_defaults( persist=True )
+        logging.debug( "no rcfile: set persist default to true" )
+    else:
+        parser.set_defaults( persist=False )
+        logging.debug( "found rcfile: set persist default to false" )
+
+    args = parser.parse_args()
+    logging.debug( "persist is set to {} after second wash".format(
+        args.persist
+    ))
 
     # If server URL is unspecified, look for "SW2_URL" in current environment
 
