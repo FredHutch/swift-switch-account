@@ -45,9 +45,16 @@ shell_output = {
     'tcsh': csh
 }
 
+class LocalParser( argparse.ArgumentParser ):
+    def error( self, message ):
+        sys.stderr.write( "Error: too few arguments\n" )
+        sys.stderr.write( "usage: sw2account lastname_f\n" )
+        sys.stderr.write(
+           "use \"sw2account --help\" for full help information\n" )
+        sys.exit(1)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = LocalParser()
 
     parser.add_argument(
         'shell',
