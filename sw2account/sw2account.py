@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+__version__='0.1.1'
+
 import argparse
 import logging
 import os
@@ -85,6 +87,12 @@ if __name__ == "__main__":
         '--debug',
         action = "store_true",
         help = "log level for client"
+    )
+    parser.add_argument(
+        '--version', '-v',
+        help = "show script version",
+        action = 'version',
+        version = "sw2account version {}".format( __version__)
     )
     args = parser.parse_args()
     if args.debug:
