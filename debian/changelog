@@ -1,3 +1,10 @@
+swift-switch-account (0.1.1-1) trusty; urgency=low
+
+  * Added version argument
+  * Release to produciton
+
+ -- Michael Gutteridge <mrg@fredhutch.org>  Wed, 14 Jan 2015 08:50:49 -0800
+
 swift-switch-account (0.1.0-1) trusty; urgency=low
 
   * Initial release 
