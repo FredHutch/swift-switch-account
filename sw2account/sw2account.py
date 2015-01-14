@@ -55,6 +55,10 @@ class LocalParser( argparse.ArgumentParser ):
            "use \"sw2account --help\" for full help information\n" )
         sys.exit(1)
 
+    def print_help( self ):
+        self._print_message( self.format_help(), sys.stderr )
+        sys.exit(0)
+
 if __name__ == "__main__":
     parser = LocalParser()
 
