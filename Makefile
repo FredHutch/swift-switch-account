@@ -1,4 +1,8 @@
-all: init/swift.csh init/swift.sh init/site-functions/sw2account
+targets = init/swift.csh \
+		  init/swift.sh \
+		  init/zshenv \
+		  init/site-functions/sw2account
+all: $(targets)
 	@:
 
 install: 
