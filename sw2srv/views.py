@@ -122,7 +122,15 @@ def auth(acct_name):
     results = conn.search_s( base, scope, filter )
     if len(results) == 2:
         group_dn = results[0][1]['distinguishedName'][0]
-        group_managed_by = results[0][1]['managedBy']
+        try:
+            group_managed_by = results[0][1]['managedBy'][0]
+        except KeyError as e:
+            if 'managedBy' in e.args:
+                server.logger.debug( "group missing managedBy attribute- soldiering on" )
+                group_managed_by = False
+            else:
+                raise e
+                sys.exit(1)
     else:
         r = jsonify( message = 'No group for account' )
         r.status_code = 404
@@ -137,11 +145,17 @@ def auth(acct_name):
         server.logger.debug( "Principal not in group via chain" )
 
     # check if principal is in managedBy for group
-    server.logger.debug("checking %s vs %s", username, group_managed_by )
-    if principal_in_group( conn, princ_dn, group_managed_by ):
-        is_ok = True
-        server.logger.debug("Allowing access based on membership in managing group")
-
+    if group_managed_by:
+        server.logger.debug("checking %s vs %s", princ_dn, group_managed_by )
+        if principal_in_group( conn, princ_dn, group_managed_by ):
+            is_ok = "manager"
+            server.logger.debug(
+                "Allowing access based on membership in managing group"
+            )
+        else:
+            server.logger.debug( "Principal not in manager group" )
+    else:
+        server.logger.debug( "no managedBy- skipping check" )
 
     if is_ok:
         server.logger.debug("returning credential")
@@ -204,7 +218,15 @@ def verify(acct_name, username):
     results = conn.search_s( base, scope, filter )
     if len(results) == 2:
         group_dn = results[0][1]['distinguishedName'][0]
-        group_managed_by = results[0][1]['managedBy'][0]
+        try:
+            group_managed_by = results[0][1]['managedBy'][0]
+        except KeyError as e:
+            if 'managedBy' in e.args:
+                server.logger.debug( "group missing managedBy attribute- soldiering on" )
+                group_managed_by = False
+            else:
+                raise e
+                sys.exit(1)
     else:
         r = jsonify( message = 'No group for account' )
         r.status_code = 404
@@ -219,14 +241,17 @@ def verify(acct_name, username):
         server.logger.debug( "Principal not in group via chain" )
 
     # check if principal is in managedBy for group
-    server.logger.debug("checking %s vs %s", princ_dn, group_managed_by )
-    if principal_in_group( conn, princ_dn, group_managed_by ):
-        is_ok = "manager"
-        server.logger.debug(
-            "Allowing access based on membership in managing group"
-        )
+    if group_managed_by:
+        server.logger.debug("checking %s vs %s", princ_dn, group_managed_by )
+        if principal_in_group( conn, princ_dn, group_managed_by ):
+            is_ok = "manager"
+            server.logger.debug(
+                "Allowing access based on membership in managing group"
+            )
+        else:
+            server.logger.debug( "Principal not in manager group" )
     else:
-        server.logger.debug( "Principal not in manager group" )
+        server.logger.debug( "no managedBy- skipping check" )
 
 
     if is_ok:
