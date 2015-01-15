@@ -1,0 +1,14 @@
+#
+# zsh function to enable sw2account function
+#
+# put this in your $zpath
+#
+sw2account() { eval `@sbindir@/sw2account.py zsh $* ;` }
+
+# Following code is run only once
+# sets sw2 and swift environment variables then
+# runs itself
+eval `echo export SW2_URL="https://toolbox.fhcrc.org/sw2srv/swift/account"`
+eval `echo export ST_AUTH="https://tin.fhcrc.org/auth/v1.0"`
+[ -r $HOME/.swiftrc ] && source $HOME/.swiftrc
+sw2account $*
