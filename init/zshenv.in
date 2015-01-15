@@ -1,0 +1,8 @@
+#
+# Add these lines to your zsh environment file (/etc/zshenv
+# or $ZDOTDIR/.zshenv
+#
+export SW2_URL="https://toolbox.fhcrc.org/sw2srv/swift/account"`
+export ST_AUTH="https://tin.fhcrc.org/auth/v1.0"`
+[ -r $HOME/.swiftrc ] && source $HOME/.swiftrc
+

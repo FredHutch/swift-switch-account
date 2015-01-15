@@ -16,6 +16,8 @@ init/swift.csh:
 	@sed 's|@sbindir@|/usr/sbin|' init/swift.csh.in > init/swift.csh
 init/swift.sh:
 	@sed 's|@sbindir@|/usr/sbin|' init/swift.sh.in > init/swift.sh
+init/zshenv:
+	@sed 's|@sbindir@|/usr/sbin|' init/zshenv.in > init/zshenv
 init/site-functions/sw2account:
 	@sed 's|@sbindir@|/usr/sbin|' \
 		init/site-functions/sw2account.zsh.in > \
