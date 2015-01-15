@@ -132,7 +132,9 @@ def auth(acct_name):
                 raise e
                 sys.exit(1)
     else:
-        r = jsonify( message = 'No group for account' )
+        r = jsonify(
+            message = 'No directory group for account {}'.format(acct_name)
+        )
         r.status_code = 404
         return r
 
@@ -168,7 +170,8 @@ def auth(acct_name):
                     r.status_code = 200
                     return r
             if r == "":
-                r = jsonify( message='Credentials for account not found' )
+                r = jsonify(
+                    message='Account {} not found on server'.format( acct_name ) )
                 r.status_code = 404
                 return r
 

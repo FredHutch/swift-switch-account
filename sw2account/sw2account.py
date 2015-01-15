@@ -178,6 +178,16 @@ if __name__ == "__main__":
                 user, account, r.status_code
             )
         )
+    elif r.status_code == 404:
+        try:
+            message = r.json()['message']
+        except KeyError:
+            logging.error( "404 returned from server with no message" )
+            sys.exit(1)
+        logging.error("{} (HTTP{})".format(
+                 message, r.status_code
+            )
+        )
     else:
         logging.error(
             "error {} retrieving credentials from server".format(
