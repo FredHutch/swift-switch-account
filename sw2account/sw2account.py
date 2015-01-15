@@ -88,6 +88,18 @@ if __name__ == "__main__":
         help = "do not write credentials to $HOME/.swiftrc"
     )
     parser.add_argument(
+        '--no-verify-ssl',
+        action = "store_false",
+        dest = "verify_ssl",
+        help = "verify ssl certification",
+    )
+    parser.add_argument(
+        '--verify-ssl',
+        action = "store_true",
+        dest = "verify_ssl",
+        help = "verify ssl certification",
+    )
+    parser.add_argument(
         '--debug',
         action = "store_true",
         help = "log level for client"
@@ -146,7 +158,7 @@ if __name__ == "__main__":
     passwd = getpass.getpass( 'Enter password for {}: '.format(user) )
 
     # Get account credentials from server_url
-    r = requests.get( server_url, verify = True, auth=( user, passwd ) )
+    r = requests.get( server_url, verify = args.verify_ssl, auth=( user, passwd ) )
     if r.status_code == 200:
         creds = r.json()
         logging.debug(
