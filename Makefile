@@ -12,9 +12,9 @@ install:
 	@install init/swift.sh $(DESTDIR)/etc/profile.d/swift.sh
 	@-install -d $(DESTDIR)/etc/csh/login.d
 	@install init/swift.csh $(DESTDIR)/etc/csh/login.d/swift.csh
-	@-install -d $(DESTDIR)/usr/local/share/zsh/site-functions
+	@-install -d $(DESTDIR)/usr/share/zsh/vendor-functions
 	@install init/site-functions/sw2account \
-		$(DESTDIR)/usr/local/share/zsh/site-functions/sw2account
+		$(DESTDIR)/usr/share/zsh/vendor-functions
 
 init/swift.csh:
 	@sed 's|@sbindir@|/usr/sbin|' init/swift.csh.in > init/swift.csh

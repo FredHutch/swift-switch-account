@@ -7,9 +7,6 @@
 %:
 	dh $@ 
 
-override_dh_usrlocal:
-	@:
-
 dh_pysupport:
 	dh_python2
 
