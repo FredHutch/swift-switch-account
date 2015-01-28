@@ -1,0 +1,14 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Why No Title?</title>
+    {% endif %}
+  </head>
+  <body>
+    <hr>
+    {% block content %}{% endblock %}
+    <hr>
+  </body>
+</html>

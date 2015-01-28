@@ -2,6 +2,7 @@
 
 from sw2srv import server
 from sw2srv import config
+from sw2srv import forms
 
 from flask import request, Response, jsonify
 from flask import render_template, redirect
@@ -153,6 +154,13 @@ def validate( username, acct_name, binddn, bindpw ):
     message = 'User is not allowed access'
     status_code = 403
     return False, message, status_code
+
+@server.route( "/swift/account", methods=('GET','POST') )
+def auth_helper():
+    form = forms.AuthHelper()
+    if form.validate_on_submit():
+        return redirect( '/swift/account/{}'.format(form.acct_name.data) )
+    return render_template( 'auth_helper.html', form = form )
 
 @server.route("/swift/account/<acct_name>")
 @requires_auth

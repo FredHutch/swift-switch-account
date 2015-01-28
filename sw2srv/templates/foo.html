@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>foo form</h1>
+<form action="" method="post" name="foo">
+    {{ form.hidden_tag() }}
+    <p>bar: {{ form.bar(size=20) }}</p>
+    <p>baz: {{ form.baz(size=20) }}</p>
+</form>
+{% endblock %}

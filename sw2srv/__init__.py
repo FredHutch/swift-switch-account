@@ -7,6 +7,7 @@ from logging.handlers import SysLogHandler
 import sw2srv.config as config
 
 server = Flask(__name__)
+server.config.from_object('sw2srv.config')
 
 syslog = logging.handlers.SysLogHandler( address='/dev/log' )
 syslog.setFormatter(
