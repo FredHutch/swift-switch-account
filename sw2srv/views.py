@@ -159,7 +159,7 @@ def validate( username, acct_name, binddn, bindpw ):
 def auth_helper():
     form = forms.AuthHelper()
     if form.validate_on_submit():
-        return redirect( '/swift/account/{}'.format(form.acct_name.data) )
+        return redirect( 'swift/account/{}'.format(form.acct_name.data) )
     return render_template( 'auth_helper.html', form = form )
 
 @server.route("/swift/account/<acct_name>")
