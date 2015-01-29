@@ -3,7 +3,9 @@
 <h1>Swift Account Credential Request</h1>
 <form action="" method="post" name="auth_helper">
     {{ form.hidden_tag() }}
-    <p>account name: {{ form.acct_name(size=20) }}</p>
+    <p>PI Account Name: {{ form.acct_name(size=20) }}</p>
+    <p style="width: 50%">Account names are typically of the form "lastname_f", 
+    with the last name and first initial of the account owner</p>
     <p><input type="submit" value="request credentials"></p>
 </form>
 {% endblock %}
