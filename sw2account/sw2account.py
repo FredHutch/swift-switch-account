@@ -110,6 +110,12 @@ if __name__ == "__main__":
         action = 'version',
         version = "sw2account version {}".format( __version__)
     )
+    parser.add_argument(
+        '--v2',
+        help = "use v2 authentication",
+        action = "store_true",
+        dest = "v2"
+    )
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
