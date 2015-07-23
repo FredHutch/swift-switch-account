@@ -60,7 +60,9 @@ class LocalParser( argparse.ArgumentParser ):
         sys.exit(0)
 
 if __name__ == "__main__":
-    parser = LocalParser()
+    #parser = LocalParser()
+    parser = argparse.ArgumentParser()
+    subparser = parser.add_subparsers(help='auth version')
 
     parser.add_argument(
         'shell',
@@ -70,10 +72,6 @@ if __name__ == "__main__":
     parser.add_argument(
         'account',
         help = "retrieve credentials for account <account>"
-    )
-    parser.add_argument(
-        '--server-url',
-        help = "URL of server with account data"
     )
     parser.add_argument(
         '--save', '--persist',
@@ -88,34 +86,37 @@ if __name__ == "__main__":
         help = "do not write credentials to $HOME/.swiftrc"
     )
     parser.add_argument(
-        '--no-verify-ssl',
-        action = "store_false",
-        dest = "verify_ssl",
-        help = "verify ssl certification",
-    )
-    parser.add_argument(
-        '--verify-ssl',
-        action = "store_true",
-        dest = "verify_ssl",
-        help = "verify ssl certification",
-    )
-    parser.add_argument(
-        '--debug',
-        action = "store_true",
-        help = "log level for client"
-    )
-    parser.add_argument(
         '--version', '-v',
         help = "show script version",
         action = 'version',
         version = "sw2account version {}".format( __version__)
     )
     parser.add_argument(
-        '--v2',
-        help = "use v2 authentication",
+        '--debug',
         action = "store_true",
-        dest = "v2"
+        help = "log level for client"
     )
+
+    v1parser = subparser.add_parser('v1', help='use version 1 authentication')
+    v1parser.add_argument(
+        '--server-url',
+        help = "URL of server with account data"
+    )
+    v1parser.add_argument(
+        '--no-verify-ssl',
+        action = "store_false",
+        dest = "verify_ssl",
+        help = "verify ssl certification",
+    )
+    v1parser.add_argument(
+        '--verify-ssl',
+        action = "store_true",
+        dest = "verify_ssl",
+        help = "verify ssl certification",
+    )
+
+    v2parser = subparser.add_parser('v2', help='use version 2 authentication')
+
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
@@ -139,8 +140,8 @@ if __name__ == "__main__":
         args.persist
     ))
 
+def return_v1_auth():
     # If server URL is unspecified, look for "SW2_URL" in current environment
-
     account = args.account
     server_url = args.server_url
 
@@ -200,6 +201,4 @@ if __name__ == "__main__":
                 r.status_code
             )
         )
-
-
 
