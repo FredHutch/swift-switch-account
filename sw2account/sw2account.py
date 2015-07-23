@@ -13,6 +13,7 @@ import getpass
 #FIXME: crappy hardcoded thing
 v1AuthUrl = 'https://tin.fhcrc.org/auth/v1.0'
 v2AuthUrl = 'https://tin.fhcrc.org/auth/v2.0'
+auth_version_default = 'v1'
 
 def _persist( export, rcfile ):
     f = open( rcfile, 'w' )
@@ -89,25 +90,6 @@ class LocalParser( argparse.ArgumentParser ):
     def print_help( self ):
         self._print_message( self.format_help(), sys.stderr )
         sys.exit(0)
-
-def set_default_subparser( self, authvers, args=None ):
-    sp_found = False
-    for arg in sys.argv[1:]:
-        if arg in ['-h','--help']:
-            break
-    else:
-        for x in self._subparsers._actions:
-            if not isinstance( x, argparse._SubParsersAction ):
-                continue
-            for sp_name in x._name_parser_map.keys():
-                if sp_name in sys.argv[1:]:
-                    sp_found = True
-
-            if not sp_found:
-                if args is None:
-                    sys.argv.insert(1, authvers,)
-                else:
-                    args.insert(0, authvers)
 
 def return_v1_auth( args ):
     # If server URL is unspecified, look for "SW2_URL" in current environment
@@ -231,7 +213,25 @@ def add_common_args( aparser ):
 
 
 if __name__ == "__main__":
-    argparse.ArgumentParser.set_default_subparser = set_default_subparser
+
+    # Fix argument order so that v1/v2 is first argument
+    try:
+        if sys.argv[1] not in ['v1','v2'] and (
+            '-h' not in sys.argv or '--help' not in sys.argv ):
+            if 'v1' in sys.argv:
+                logging.debug( "reordering arguments to put v1 arg at head" )
+                sys.argv.remove('v1')
+                sys.argv.insert(1, 'v1')
+            elif 'v2' in sys.argv:
+                logging.debug( "reordering arguments to put v2 arg at head" )
+                sys.argv.remove('v2')
+                sys.argv.insert(1, 'v2')
+            else:
+                logging.debug( "setting default version" )
+                sys.argv.insert(1, auth_version_default)
+    except IndexError:
+        pass
+
     #parser = LocalParser()
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(
@@ -259,8 +259,6 @@ if __name__ == "__main__":
 
     v2parser = subparser.add_parser('v2', help='use version 2 authentication')
     add_common_args( v2parser )
-
-    parser.set_default_subparser('v1')
 
     args = parser.parse_args()
     if args.debug:
