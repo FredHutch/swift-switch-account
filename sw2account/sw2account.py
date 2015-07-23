@@ -62,7 +62,9 @@ class LocalParser( argparse.ArgumentParser ):
 if __name__ == "__main__":
     #parser = LocalParser()
     parser = argparse.ArgumentParser()
-    subparser = parser.add_subparsers(help='auth version')
+    subparser = parser.add_subparsers(
+        dest = "auth_version", help='authentication version to use'
+    )
 
     parser.add_argument(
         'shell',
@@ -140,7 +142,7 @@ if __name__ == "__main__":
         args.persist
     ))
 
-def return_v1_auth():
+def return_v1_auth( args ):
     # If server URL is unspecified, look for "SW2_URL" in current environment
     account = args.account
     server_url = args.server_url
