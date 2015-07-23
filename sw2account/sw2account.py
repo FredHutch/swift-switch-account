@@ -10,11 +10,28 @@ import sys
 import requests
 import getpass
 
-def sh( creds, persist ):
+#FIXME: crappy hardcoded thing
+v1AuthUrl = 'https://tin.fhcrc.org/auth/v1.0'
+v2AuthUrl = 'https://tin.fhcrc.org/auth/v2.0'
+
+def sh(creds, auth_version, persist=False):
     export = []
-    export.append( "ST_USER={} ; export ST_USER".format( creds['account'] ))
-    export.append( "ST_KEY={} ; export ST_KEY".format( creds['password'] ))
+    if auth_version == 'v1':
+        export.append(
+            "unsetenv OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
+        export.append( "setenv ST_USER {}".format( creds['account'] ) )
+        export.append( "setenv ST_KEY {}".format( creds['password'] ) )
+        export.append( "setenv ST_AUTH {}".format( v1AuthUrl ) )
+    else:
+        export.append(
+            "unsetenv ST_USER ST_KEY ST_AUTH" )
+        export.append( "setenv OS_USERNAME {}".format( creds['user'] ) )
+        export.append( "setenv OS_TENANT_NAME {}".format( creds['account'] ) )
+        export.append( "setenv OS_PASSWORD {}".format( creds['password'] ) )
+        export.append( "setenv OS_AUTH_URL {}".format( v2AuthUrl ) )
+
     print ";".join( export )
+
     if persist:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
         logging.debug( "writing to {}".format( rcfile ) )
@@ -24,11 +41,24 @@ def sh( creds, persist ):
         os.chmod( rcfile, 0600 )
         logging.info( "saved Swift credentials" )
 
-def csh( creds, persist=False ):
+def csh(creds, auth_version, persist=False):
     export = []
-    export.append( "setenv ST_USER {}".format( creds['account'] ) )
-    export.append( "setenv ST_KEY {}".format( creds['password'] ) )
+    if auth_version == 'v1':
+        export.append(
+            "unsetenv OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
+        export.append( "setenv ST_USER {}".format( creds['account'] ) )
+        export.append( "setenv ST_KEY {}".format( creds['password'] ) )
+        export.append( "setenv ST_AUTH {}".format( v1AuthUrl ) )
+    else:
+        export.append(
+            "unsetenv ST_USER ST_KEY ST_AUTH" )
+        export.append( "setenv OS_USERNAME {}".format( creds['user'] ) )
+        export.append( "setenv OS_TENANT_NAME {}".format( creds['account'] ) )
+        export.append( "setenv OS_PASSWORD {}".format( creds['password'] ) )
+        export.append( "setenv OS_AUTH_URL {}".format( v2AuthUrl ) )
+
     print ";".join( export )
+
     if persist:
         rcfile = os.environ[ 'HOME' ] + "/.swift.cshrc"
         logging.debug( "writing to {}".format( rcfile ) )
@@ -46,6 +76,7 @@ shell_output = {
     'csh': csh,
     'tcsh': csh
 }
+
 
 class LocalParser( argparse.ArgumentParser ):
     def error( self, message ):
@@ -92,7 +123,11 @@ def return_v1_auth( args ):
         )
 
         creds['url'] = 'https://tin/some/crap'
-        shell_output[ args.shell ](creds,args.persist)
+        shell_output[ args.shell ](
+            creds=creds,
+            persist=args.persist,
+            auth_version=args.auth_version
+        )
 
     elif r.status_code == 401:
         logging.error(
@@ -120,6 +155,19 @@ def return_v1_auth( args ):
                 r.status_code
             )
         )
+
+def return_v2_auth( args ):
+    # authentication is done using Swiftstack version 2 authentication
+
+    # requires additional "tenant name" in addition to username and password
+    tenant = args.account
+
+    # take username password from currently logged in user
+    user = getpass.getuser()
+    passwd = getpass.getpass( 'Enter password for {}: '.format(user) )
+
+
+
 
 if __name__ == "__main__":
     #parser = LocalParser()
