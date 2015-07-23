@@ -90,6 +90,25 @@ class LocalParser( argparse.ArgumentParser ):
         self._print_message( self.format_help(), sys.stderr )
         sys.exit(0)
 
+def set_default_subparser( self, authvers, args=None ):
+    sp_found = False
+    for arg in sys.argv[1:]:
+        if arg in ['-h','--help']:
+            break
+    else:
+        for x in self._subparsers._actions:
+            if not isinstance( x, argparse._SubParsersAction ):
+                continue
+            for sp_name in x._name_parser_map.keys():
+                if sp_name in sys.argv[1:]:
+                    sp_found = True
+
+            if not sp_found:
+                if args is None:
+                    sys.argv.insert(1, authvers,)
+                else:
+                    args.insert(0, authvers)
+
 def return_v1_auth( args ):
     # If server URL is unspecified, look for "SW2_URL" in current environment
     account = args.account
@@ -176,47 +195,51 @@ def return_v2_auth( args ):
         auth_version=args.auth_version
     )
 
+def add_common_args( aparser ):
+    aparser.add_argument(
+        'shell',
+        help = "format output for shell <shell>",
+        choices = shell_output.keys()
+    )
+    aparser.add_argument(
+        'account',
+        help = "retrieve credentials for account <account>"
+    )
+    aparser.add_argument(
+        '--save', '--persist',
+        dest = 'persist',
+        action = 'store_true',
+        help = "write credentials to $HOME/.swiftrc"
+    )
+    aparser.add_argument(
+        '--no-save', '--no-persist',
+        dest = 'persist',
+        action = 'store_false',
+        help = "do not write credentials to $HOME/.swiftrc"
+    )
+    aparser.add_argument(
+        '--version', '-v',
+        help = "show script version",
+        action = 'version',
+        version = "sw2account version {}".format( __version__)
+    )
+    aparser.add_argument(
+        '--debug',
+        action = "store_true",
+        help = "log level for client"
+    )
+
+
 if __name__ == "__main__":
+    argparse.ArgumentParser.set_default_subparser = set_default_subparser
     #parser = LocalParser()
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(
         dest = "auth_version", help='authentication version to use'
     )
 
-    parser.add_argument(
-        'shell',
-        help = "format output for shell <shell>",
-        choices = shell_output.keys()
-    )
-    parser.add_argument(
-        'account',
-        help = "retrieve credentials for account <account>"
-    )
-    parser.add_argument(
-        '--save', '--persist',
-        dest = 'persist',
-        action = 'store_true',
-        help = "write credentials to $HOME/.swiftrc"
-    )
-    parser.add_argument(
-        '--no-save', '--no-persist',
-        dest = 'persist',
-        action = 'store_false',
-        help = "do not write credentials to $HOME/.swiftrc"
-    )
-    parser.add_argument(
-        '--version', '-v',
-        help = "show script version",
-        action = 'version',
-        version = "sw2account version {}".format( __version__)
-    )
-    parser.add_argument(
-        '--debug',
-        action = "store_true",
-        help = "log level for client"
-    )
-
     v1parser = subparser.add_parser('v1', help='use version 1 authentication')
+    add_common_args( v1parser )
     v1parser.add_argument(
         '--server-url',
         help = "URL of server with account data"
@@ -235,6 +258,9 @@ if __name__ == "__main__":
     )
 
     v2parser = subparser.add_parser('v2', help='use version 2 authentication')
+    add_common_args( v2parser )
+
+    parser.set_default_subparser('v1')
 
     args = parser.parse_args()
     if args.debug:
