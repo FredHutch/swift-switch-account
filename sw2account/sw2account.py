@@ -14,6 +14,14 @@ import getpass
 v1AuthUrl = 'https://tin.fhcrc.org/auth/v1.0'
 v2AuthUrl = 'https://tin.fhcrc.org/auth/v2.0'
 
+def _persist( export, rcfile ):
+    f = open( rcfile, 'w' )
+    logging.debug( "writing to {}".format( rcfile ) )
+    f.write( "\n".join( export ) )
+    f.close()
+    os.chmod( rcfile, 0600 )
+    logging.info( "saved Swift credentials" )
+
 def sh(creds, auth_version, persist=False):
     export = []
     if auth_version == 'v1':
@@ -34,12 +42,8 @@ def sh(creds, auth_version, persist=False):
 
     if persist:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
-        logging.debug( "writing to {}".format( rcfile ) )
-        f = open( rcfile, 'w' )
-        f.write( "\n".join( export ) )
-        f.close()
-        os.chmod( rcfile, 0600 )
-        logging.info( "saved Swift credentials" )
+        logging.debug( "persisting environment variables" )
+        _persist( export, rcfile )
 
 def csh(creds, auth_version, persist=False):
     export = []
@@ -61,12 +65,8 @@ def csh(creds, auth_version, persist=False):
 
     if persist:
         rcfile = os.environ[ 'HOME' ] + "/.swift.cshrc"
-        logging.debug( "writing to {}".format( rcfile ) )
-        f = open( rcfile, 'w' )
-        f.write( "\n".join( export ) )
-        f.close()
-        os.chmod( rcfile, 0600 )
-        logging.info( "saved Swift credentials" )
+        logging.debug( "persisting environment variables" )
+        _persist( export, rcfile )
 
 shell_output = {
     'sh': sh,
