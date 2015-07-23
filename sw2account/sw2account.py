@@ -59,6 +59,68 @@ class LocalParser( argparse.ArgumentParser ):
         self._print_message( self.format_help(), sys.stderr )
         sys.exit(0)
 
+def return_v1_auth( args ):
+    # If server URL is unspecified, look for "SW2_URL" in current environment
+    account = args.account
+    server_url = args.server_url
+
+    logging.debug(
+        'asking {} for credentials for {}'.format( server_url, account )
+    )
+
+    if not server_url:
+        try:
+            server_url = os.environ[ 'SW2_URL' ]
+        except KeyError:
+            logging.error( "Server URL is unset (not in arguments or SW2_URL)" )
+            sys.exit(1)
+
+    # Add account name to URL
+    server_url = '/'.join( [ server_url, account ] )
+    logging.debug( 'final url is {}'.format( server_url ) )
+
+    # Get user authentication credentials
+    user = getpass.getuser()
+    passwd = getpass.getpass( 'Enter password for {}: '.format(user) )
+
+    # Get account credentials from server_url
+    r = requests.get( server_url, verify = args.verify_ssl, auth=( user, passwd ) )
+    if r.status_code == 200:
+        creds = r.json()
+        logging.debug(
+            "got credentials for account {}".format( creds['account'] )
+        )
+
+        creds['url'] = 'https://tin/some/crap'
+        shell_output[ args.shell ](creds,args.persist)
+
+    elif r.status_code == 401:
+        logging.error(
+            "invalid username/password supplied to server"
+        )
+    elif r.status_code == 403:
+        logging.error(
+            "user {} is not permitted to use {} ({})".format(
+                user, account, r.status_code
+            )
+        )
+    elif r.status_code == 404:
+        try:
+            message = r.json()['message']
+        except KeyError:
+            logging.error( "404 returned from server with no message" )
+            sys.exit(1)
+        logging.error("{} (HTTP{})".format(
+                 message, r.status_code
+            )
+        )
+    else:
+        logging.error(
+            "error {} retrieving credentials from server".format(
+                r.status_code
+            )
+        )
+
 if __name__ == "__main__":
     #parser = LocalParser()
     parser = argparse.ArgumentParser()
@@ -142,65 +204,7 @@ if __name__ == "__main__":
         args.persist
     ))
 
-def return_v1_auth( args ):
-    # If server URL is unspecified, look for "SW2_URL" in current environment
-    account = args.account
-    server_url = args.server_url
+    if args.auth_version == 'v1':
+        return_v1_auth( args )
 
-    logging.debug(
-        'asking {} for credentials for {}'.format( server_url, account )
-    )
-
-    if not server_url:
-        try:
-            server_url = os.environ[ 'SW2_URL' ]
-        except KeyError:
-            logging.error( "Server URL is unset (not in arguments or SW2_URL)" )
-            sys.exit(1)
-
-    # Add account name to URL
-    server_url = '/'.join( [ server_url, account ] )
-    logging.debug( 'final url is {}'.format( server_url ) )
-
-    # Get user authentication credentials
-    user = getpass.getuser()
-    passwd = getpass.getpass( 'Enter password for {}: '.format(user) )
-
-    # Get account credentials from server_url
-    r = requests.get( server_url, verify = args.verify_ssl, auth=( user, passwd ) )
-    if r.status_code == 200:
-        creds = r.json()
-        logging.debug(
-            "got credentials for account {}".format( creds['account'] )
-        )
-
-        creds['url'] = 'https://tin/some/crap'
-        shell_output[ args.shell ](creds,args.persist)
-
-    elif r.status_code == 401:
-        logging.error(
-            "invalid username/password supplied to server"
-        )
-    elif r.status_code == 403:
-        logging.error(
-            "user {} is not permitted to use {} ({})".format(
-                user, account, r.status_code
-            )
-        )
-    elif r.status_code == 404:
-        try:
-            message = r.json()['message']
-        except KeyError:
-            logging.error( "404 returned from server with no message" )
-            sys.exit(1)
-        logging.error("{} (HTTP{})".format(
-                 message, r.status_code
-            )
-        )
-    else:
-        logging.error(
-            "error {} retrieving credentials from server".format(
-                r.status_code
-            )
-        )
 
