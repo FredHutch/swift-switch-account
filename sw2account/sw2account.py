@@ -27,17 +27,17 @@ def sh(creds, auth_version, persist=False):
     export = []
     if auth_version == 'v1':
         export.append(
-            "unsetenv OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
-        export.append( "setenv ST_USER {}".format( creds['account'] ) )
-        export.append( "setenv ST_KEY {}".format( creds['password'] ) )
-        export.append( "setenv ST_AUTH {}".format( v1AuthUrl ) )
+            "unset OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
+        export.append( "export ST_USER={}".format( creds['account'] ) )
+        export.append( "export ST_KEY={}".format( creds['password'] ) )
+        export.append( "export ST_AUTH={}".format( v1AuthUrl ) )
     else:
         export.append(
-            "unsetenv ST_USER ST_KEY ST_AUTH" )
-        export.append( "setenv OS_USERNAME {}".format( creds['user'] ) )
-        export.append( "setenv OS_TENANT_NAME {}".format( creds['account'] ) )
-        export.append( "setenv OS_PASSWORD {}".format( creds['password'] ) )
-        export.append( "setenv OS_AUTH_URL {}".format( v2AuthUrl ) )
+            "unset ST_USER ST_KEY ST_AUTH" )
+        export.append( "export OS_USERNAME={}".format( creds['user'] ) )
+        export.append( "export OS_TENANT_NAME={}".format( creds['account'] ) )
+        export.append( "export OS_PASSWORD={}".format( creds['password'] ) )
+        export.append( "export OS_AUTH_URL={}".format( v2AuthUrl ) )
 
     print ";".join( export )
 
@@ -210,7 +210,6 @@ def add_common_args( aparser ):
         action = "store_true",
         help = "log level for client"
     )
-
 
 if __name__ == "__main__":
 
