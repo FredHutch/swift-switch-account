@@ -157,17 +157,24 @@ def return_v1_auth( args ):
         )
 
 def return_v2_auth( args ):
+    creds = {}
     # authentication is done using Swiftstack version 2 authentication
 
     # requires additional "tenant name" in addition to username and password
-    tenant = args.account
+    creds['account'] = args.account
 
     # take username password from currently logged in user
-    user = getpass.getuser()
-    passwd = getpass.getpass( 'Enter password for {}: '.format(user) )
-
-
-
+    creds['user'] = getpass.getuser()
+    creds['password'] = getpass.getpass(
+        'Enter password for {}: '.format( creds['user'] ) )
+    logging.debug(
+        "got credentials for account {}".format( creds['account'] )
+    )
+    shell_output[ args.shell ](
+        creds=creds,
+        persist=args.persist,
+        auth_version=args.auth_version
+    )
 
 if __name__ == "__main__":
     #parser = LocalParser()
@@ -254,5 +261,7 @@ if __name__ == "__main__":
 
     if args.auth_version == 'v1':
         return_v1_auth( args )
+    elif args.auth_version == 'v2':
+        return_v2_auth( args )
 
 
