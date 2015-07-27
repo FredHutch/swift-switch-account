@@ -1,3 +1,9 @@
+swift-switch-account (0.2.0-1) trusty; urgency=low
+
+  Adding Swiftstack V2 authentication capabilities
+
+ -- Michael Gutteridge <mrg@fredhutch.org> Mon, 27 Jul 2015 11:24:05 -0700
+
 swift-switch-account (0.1.2-1) trusty; urgency=low
 
   * added zsh support
