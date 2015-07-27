@@ -224,6 +224,53 @@ def add_common_args( aparser ):
 
 if __name__ == "__main__":
 
+    # Get the config first
+    # Need to prime the pump to find defaults
+    tparse = argparse.ArgumentParser()
+    tparse.add_argument(
+        '--config',
+        default = "/etc/sw2account.cfg",
+        help = "configuration file to use (default=/etc/sw2account.cfg)"
+    )
+    tparse.add_argument(
+        '--stack',
+        default = "default",
+        help = "stack name to authentication against (see configfile)"
+    )
+    args, unknown = tparse.parse_known_args()
+
+    # Read config file with defaults
+    if not os.path.isfile( args.config ):
+        logging.error( "missing config file %s", args.config )
+        sys.exit(1)
+
+    appdefaults = ConfigParser.ConfigParser()
+    try:
+        appdefaults.read( args.config )
+        logging.debug( "reading config from %s", args.config )
+    except ConfigParser.ParsingError:
+        logging.error(
+            "error reading configuration file %s - check format", args.config
+        )
+        sys.exit(1)
+
+    try:
+        v1AuthUrl = appdefaults.get( args.stack, 'v1AuthUrl' )
+        v2AuthUrl = appdefaults.get( args.stack, 'v2AuthUrl' )
+        auth_version_default = appdefaults.get(
+            args.stack, 'auth_version_default' )
+    except ConfigParser.NoSectionError:
+        logging.error( "Stack '%s' not configured in configfile %s",
+                      args.stack, args.config )
+        sys.exit(1)
+    except ConfigParser.NoOptionError:
+        logging.error(
+            "Configfile %s does not contain correct entries for stack '%s'",
+            args.config, args.stack
+        )
+        sys.exit(1)
+
+
     # Fix argument order so that v1/v2 is first argument
     try:
         if sys.argv[1] not in ['v1','v2'] and (
@@ -274,37 +321,6 @@ if __name__ == "__main__":
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
     logging.debug( 'arguments: %s', args )
-
-    # Read config file with defaults
-    if not os.path.isfile( args.config ):
-        logging.error( "missing config file %s", args.config )
-        sys.exit(1)
-
-    appdefaults = ConfigParser.ConfigParser()
-    try:
-        appdefaults.read( args.config )
-        logging.debug( "reading config from %s", args.config )
-    except ConfigParser.ParsingError:
-        logging.error(
-            "error reading configuration file %s - check format", args.config
-        )
-        sys.exit(1)
-
-    try:
-        v1AuthUrl = appdefaults.get( args.stack, 'v1AuthUrl' )
-        v2AuthUrl = appdefaults.get( args.stack, 'v2AuthUrl' )
-        auth_version_default = appdefaults.get(
-            args.stack, 'auth_version_default' )
-    except ConfigParser.NoSectionError:
-        logging.error( "Stack '%s' not configured in configfile %s",
-                      args.stack, args.config )
-        sys.exit(1)
-    except ConfigParser.NoOptionError:
-        logging.error(
-            "Configfile %s does not contain correct entries for stack '%s'",
-            args.config, args.stack
-        )
-        sys.exit(1)
 
     if args.shell in [ 'bash', 'ksh', 'sh', 'zsh' ]:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
