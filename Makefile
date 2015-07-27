@@ -9,7 +9,7 @@ install: $(targets)
 	@echo "Installing sw2account"
 	@-install -d $(DESTDIR)/usr/sbin
 	@install sw2account/sw2account.py $(DESTDIR)/usr/sbin
-	@-install -d $(DESTDIR)/etc/sw2account.cfg.ex
+	@-install -d $(DESTDIR)/etc
 	@install etc/sw2account.cfg.ex $(DESTDIR)/etc/sw2account.cfg.ex
 	@-install -d $(DESTDIR)/etc/profile.d
 	@install init/swift.sh $(DESTDIR)/etc/profile.d/swift.sh
