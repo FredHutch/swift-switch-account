@@ -5,9 +5,12 @@ targets = init/swift.csh \
 all: $(targets)
 	@:
 
-install: 
+install: $(targets)
+	@echo "Installing sw2account"
 	@-install -d $(DESTDIR)/usr/sbin
 	@install sw2account/sw2account.py $(DESTDIR)/usr/sbin
+	@-install -d $(DESTDIR)/etc/sw2account.cfg.ex
+	@install etc/sw2account.cfg.ex $(DESTDIR)/etc/sw2account.cfg.ex
 	@-install -d $(DESTDIR)/etc/profile.d
 	@install init/swift.sh $(DESTDIR)/etc/profile.d/swift.sh
 	@-install -d $(DESTDIR)/etc/csh/login.d
@@ -15,6 +18,7 @@ install:
 	@-install -d $(DESTDIR)/usr/local/share/zsh/site-functions
 	@install init/site-functions/sw2account \
 		$(DESTDIR)/usr/local/share/zsh/site-functions/sw2account
+	@echo "Complete!"
 
 init/swift.csh:
 	@sed 's|@sbindir@|/usr/sbin|' init/swift.csh.in > init/swift.csh
