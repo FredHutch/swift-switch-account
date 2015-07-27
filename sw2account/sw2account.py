@@ -9,11 +9,12 @@ import os.path
 import sys
 import requests
 import getpass
+import ConfigParser
 
-#FIXME: crappy hardcoded thing
-v1AuthUrl = 'https://tin.fhcrc.org/auth/v1.0'
-v2AuthUrl = 'https://tin.fhcrc.org/auth/v2.0'
-auth_version_default = 'v1'
+#FIXME: crappy hardcoded things
+#v1AuthUrl = 'https://tin.fhcrc.org/auth/v1.0'
+#v2AuthUrl = 'https://tin.fhcrc.org/auth/v2.0'
+#auth_version_default = 'v1'
 
 def _persist( export, rcfile ):
     f = open( rcfile, 'w' )
@@ -28,16 +29,16 @@ def sh(creds, auth_version, persist=False):
     if auth_version == 'v1':
         export.append(
             "unset OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
-        export.append( "export ST_USER={}".format( creds['account'] ) )
-        export.append( "export ST_KEY={}".format( creds['password'] ) )
-        export.append( "export ST_AUTH={}".format( v1AuthUrl ) )
+        export.append( "export ST_USER='{}'".format( creds['account'] ) )
+        export.append( "export ST_KEY='{}'".format( creds['password'] ) )
+        export.append( "export ST_AUTH='{}'".format( v1AuthUrl ) )
     else:
         export.append(
             "unset ST_USER ST_KEY ST_AUTH" )
-        export.append( "export OS_USERNAME={}".format( creds['user'] ) )
-        export.append( "export OS_TENANT_NAME={}".format( creds['account'] ) )
-        export.append( "export OS_PASSWORD={}".format( creds['password'] ) )
-        export.append( "export OS_AUTH_URL={}".format( v2AuthUrl ) )
+        export.append( "export OS_USERNAME='{}'".format( creds['user'] ) )
+        export.append( "export OS_TENANT_NAME='{}'".format( creds['account'] ) )
+        export.append( "export OS_PASSWORD='{}'".format( creds['password'] ) )
+        export.append( "export OS_AUTH_URL='{}'".format( v2AuthUrl ) )
 
     print ";".join( export )
 
@@ -51,16 +52,16 @@ def csh(creds, auth_version, persist=False):
     if auth_version == 'v1':
         export.append(
             "unsetenv OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
-        export.append( "setenv ST_USER {}".format( creds['account'] ) )
-        export.append( "setenv ST_KEY {}".format( creds['password'] ) )
-        export.append( "setenv ST_AUTH {}".format( v1AuthUrl ) )
+        export.append( "setenv ST_USER '{}'".format( creds['account'] ) )
+        export.append( "setenv ST_KEY '{}'".format( creds['password'] ) )
+        export.append( "setenv ST_AUTH '{}'".format( v1AuthUrl ) )
     else:
         export.append(
             "unsetenv ST_USER ST_KEY ST_AUTH" )
-        export.append( "setenv OS_USERNAME {}".format( creds['user'] ) )
-        export.append( "setenv OS_TENANT_NAME {}".format( creds['account'] ) )
-        export.append( "setenv OS_PASSWORD {}".format( creds['password'] ) )
-        export.append( "setenv OS_AUTH_URL {}".format( v2AuthUrl ) )
+        export.append( "setenv OS_USERNAME '{}'".format( creds['user'] ) )
+        export.append( "setenv OS_TENANT_NAME '{}'".format( creds['account'] ) )
+        export.append( "setenv OS_PASSWORD '{}'".format( creds['password'] ) )
+        export.append( "setenv OS_AUTH_URL '{}'".format( v2AuthUrl ) )
 
     print ";".join( export )
 
@@ -188,6 +189,16 @@ def add_common_args( aparser ):
         help = "retrieve credentials for account <account>"
     )
     aparser.add_argument(
+        '--config',
+        default = "/etc/sw2account.cfg",
+        help = "configuration file to use (default=/etc/sw2account.cfg)"
+    )
+    aparser.add_argument(
+        '--stack',
+        default = "default",
+        help = "stack name to authentication against (see configfile)"
+    )
+    aparser.add_argument(
         '--save', '--persist',
         dest = 'persist',
         action = 'store_true',
@@ -263,6 +274,37 @@ if __name__ == "__main__":
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
     logging.debug( 'arguments: %s', args )
+
+    # Read config file with defaults
+    if not os.path.isfile( args.config ):
+        logging.error( "missing config file %s", args.config )
+        sys.exit(1)
+
+    appdefaults = ConfigParser.ConfigParser()
+    try:
+        appdefaults.read( args.config )
+        logging.debug( "reading config from %s", args.config )
+    except ConfigParser.ParsingError:
+        logging.error(
+            "error reading configuration file %s - check format", args.config
+        )
+        sys.exit(1)
+
+    try:
+        v1AuthUrl = appdefaults.get( args.stack, 'v1AuthUrl' )
+        v2AuthUrl = appdefaults.get( args.stack, 'v2AuthUrl' )
+        auth_version_default = appdefaults.get(
+            args.stack, 'auth_version_default' )
+    except ConfigParser.NoSectionError:
+        logging.error( "Stack '%s' not configured in configfile %s",
+                      args.stack, args.config )
+        sys.exit(1)
+    except ConfigParser.NoOptionError:
+        logging.error(
+            "Configfile %s does not contain correct entries for stack '%s'",
+            args.config, args.stack
+        )
+        sys.exit(1)
 
     if args.shell in [ 'bash', 'ksh', 'sh', 'zsh' ]:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
