@@ -53,6 +53,7 @@ docs/_build/
 # PyBuilder
 target/
 
+*.swp
 certs/test.crt
 certs/test.key
 sw2srv/config.py
@@ -64,4 +65,4 @@ init/site-functions/sw2account
 debian/files
 debian/sw2.substvars
 debian/sw2/
-
+etc/sw2account.cfg
