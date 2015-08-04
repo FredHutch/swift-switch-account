@@ -237,7 +237,7 @@ if __name__ == "__main__":
     tparse.add_argument(
         '--stack',
         default = "default",
-        help = "stack name to authentication against (see configfile)"
+        help = "stack name to authenticate against (see configfile)"
     )
     args, unknown = tparse.parse_known_args()
 
