@@ -36,7 +36,8 @@ def sh(creds, auth_version, persist=False):
         export.append(
             "unset ST_USER ST_KEY ST_AUTH" )
         export.append( "export OS_USERNAME='{}'".format( creds['user'] ) )
-        export.append( "export OS_TENANT_NAME='{}'".format( creds['account'] ) )
+        export.append(
+            "export OS_TENANT_NAME='AUTH_Swift_{}'".format( creds['account'] ) )
         export.append( "export OS_PASSWORD='{}'".format( creds['password'] ) )
         export.append( "export OS_AUTH_URL='{}'".format( v2AuthUrl ) )
 
@@ -59,7 +60,8 @@ def csh(creds, auth_version, persist=False):
         export.append(
             "unsetenv ST_USER ST_KEY ST_AUTH" )
         export.append( "setenv OS_USERNAME '{}'".format( creds['user'] ) )
-        export.append( "setenv OS_TENANT_NAME '{}'".format( creds['account'] ) )
+        export.append(
+            "setenv OS_TENANT_NAME 'AUTH_Swift_{}'".format( creds['account'] ) )
         export.append( "setenv OS_PASSWORD '{}'".format( creds['password'] ) )
         export.append( "setenv OS_AUTH_URL '{}'".format( v2AuthUrl ) )
 
