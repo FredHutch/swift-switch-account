@@ -29,6 +29,8 @@ def sh(creds, auth_version, persist=False):
     if auth_version == 'v1':
         export.append(
             "unset OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
+        export.append(
+            "unset OS_AUTH_TOKEN OS_STORAGE_URL" )
         export.append( "export ST_USER='{}'".format( creds['account'] ) )
         export.append( "export ST_KEY='{}'".format( creds['password'] ) )
         export.append( "export ST_AUTH='{}'".format( v1AuthUrl ) )
@@ -53,6 +55,8 @@ def csh(creds, auth_version, persist=False):
     if auth_version == 'v1':
         export.append(
             "unsetenv OS_USERNAME OS_PASSWORD OS_TENANT_NAME OS_AUTH_URL" )
+        export.append(
+            "unsetenv OS_AUTH_TOKEN OS_STORAGE_URL" )
         export.append( "setenv ST_USER '{}'".format( creds['account'] ) )
         export.append( "setenv ST_KEY '{}'".format( creds['password'] ) )
         export.append( "setenv ST_AUTH '{}'".format( v1AuthUrl ) )
