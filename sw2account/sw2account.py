@@ -24,7 +24,7 @@ def _persist( export, rcfile ):
     os.chmod( rcfile, 0600 )
     logging.info( "saved Swift credentials" )
 
-def sh(creds, auth_version, savepw, persist=False ):
+def sh(creds, auth_version, savepw=False, persist=False ):
     export = []
     if auth_version == 'v1':
         export.append(
@@ -52,7 +52,7 @@ def sh(creds, auth_version, savepw, persist=False ):
         logging.debug( "persisting environment variables" )
         _persist( export, rcfile )
 
-def csh(creds, auth_version, savepw, persist=False ):
+def csh(creds, auth_version, savepw=False, persist=False ):
     export = []
     if auth_version == 'v1':
         export.append(
@@ -182,6 +182,9 @@ def return_v2_auth( args ):
     logging.debug(
         "got credentials for account {}".format( creds['account'] )
     )
+    if args.savepw:
+        logging.debug( 'saving password in rc and environment' )
+
     shell_output[ args.shell ](
         creds=creds,
         persist=args.persist,
@@ -347,11 +350,6 @@ if __name__ == "__main__":
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
     logging.debug( 'arguments: %s', args )
-
-    savepw = False
-    if args.savepw:
-        savepw = True
-        logging.debug( 'saving password in rc and environment' )
 
     if args.shell in [ 'bash', 'ksh', 'sh', 'zsh' ]:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
