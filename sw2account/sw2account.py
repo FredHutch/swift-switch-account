@@ -24,7 +24,7 @@ def _persist( export, rcfile ):
     os.chmod( rcfile, 0600 )
     logging.info( "saved Swift credentials" )
 
-def sh(creds, auth_version, persist=False):
+def sh(creds, auth_version, savepw, persist=False ):
     export = []
     if auth_version == 'v1':
         export.append(
@@ -40,7 +40,9 @@ def sh(creds, auth_version, persist=False):
         export.append( "export OS_USERNAME='{}'".format( creds['user'] ) )
         export.append(
             "export OS_TENANT_NAME='AUTH_Swift_{}'".format( creds['account'] ) )
-        export.append( "export OS_PASSWORD='{}'".format( creds['password'] ) )
+        if savepw:
+            export.append(
+                "export OS_PASSWORD='{}'".format( creds['password'] ) )
         export.append( "export OS_AUTH_URL='{}'".format( v2AuthUrl ) )
 
     print ";".join( export )
@@ -50,7 +52,7 @@ def sh(creds, auth_version, persist=False):
         logging.debug( "persisting environment variables" )
         _persist( export, rcfile )
 
-def csh(creds, auth_version, persist=False):
+def csh(creds, auth_version, savepw, persist=False ):
     export = []
     if auth_version == 'v1':
         export.append(
@@ -66,7 +68,9 @@ def csh(creds, auth_version, persist=False):
         export.append( "setenv OS_USERNAME '{}'".format( creds['user'] ) )
         export.append(
             "setenv OS_TENANT_NAME 'AUTH_Swift_{}'".format( creds['account'] ) )
-        export.append( "setenv OS_PASSWORD '{}'".format( creds['password'] ) )
+        if savepw:
+            export.append(
+                "setenv OS_PASSWORD '{}'".format( creds['password'] ) )
         export.append( "setenv OS_AUTH_URL '{}'".format( v2AuthUrl ) )
 
     print ";".join( export )
@@ -181,6 +185,7 @@ def return_v2_auth( args ):
     shell_output[ args.shell ](
         creds=creds,
         persist=args.persist,
+        savepw=args.savepw,
         auth_version=args.auth_version
     )
 
@@ -323,10 +328,30 @@ if __name__ == "__main__":
     v2parser = subparser.add_parser('v2', help='use version 2 authentication')
     add_common_args( v2parser )
 
+    v2parser.add_argument(
+        '--save-password',
+        action = "store_true",
+        dest = "savepw",
+        help = "save password in rc and environment- not recommended",
+    )
+
+    v2parser.add_argument(
+        '--no-save-password',
+        action = "store_false",
+        dest = "savepw",
+        help = "(default) do not save password in rc and environment- recommended",
+    )
+
     args = parser.parse_args()
+
     if args.debug:
         logging.basicConfig( level=logging.DEBUG )
     logging.debug( 'arguments: %s', args )
+
+    savepw = False
+    if args.savepw:
+        savepw = True
+        logging.debug( 'saving password in rc and environment' )
 
     if args.shell in [ 'bash', 'ksh', 'sh', 'zsh' ]:
         rcfile = os.environ[ 'HOME' ] + "/.swiftrc"
