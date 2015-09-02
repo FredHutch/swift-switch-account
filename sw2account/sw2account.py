@@ -178,9 +178,7 @@ def return_v2_auth( args ):
     # take username password from currently logged in user
     creds['user'] = getpass.getuser()
     if args.savepw:
-        logging.warning(
-            "Saving passwords is insecure and not recommended." +
-        )
+        logging.warning( "Saving passwords is insecure and not recommended." )
         creds['password'] = getpass.getpass(
             'Enter password for {}: '.format( creds['user'] ) )
     logging.debug(
