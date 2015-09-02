@@ -177,8 +177,13 @@ def return_v2_auth( args ):
 
     # take username password from currently logged in user
     creds['user'] = getpass.getuser()
-    creds['password'] = getpass.getpass(
-        'Enter password for {}: '.format( creds['user'] ) )
+    if args.savepw:
+        logging.warning(
+            "Saving passwords is not recommended.\n" +
+            "Use ctrl-c to exit if you don't wish to continue"
+        )
+        creds['password'] = getpass.getpass(
+            'Enter password for {}: '.format( creds['user'] ) )
     logging.debug(
         "got credentials for account {}".format( creds['account'] )
     )
