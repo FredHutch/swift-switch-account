@@ -11,11 +11,6 @@ import requests
 import getpass
 import ConfigParser
 
-#FIXME: crappy hardcoded things
-#v1AuthUrl = 'https://tin.fhcrc.org/auth/v1.0'
-#v2AuthUrl = 'https://tin.fhcrc.org/auth/v2.0'
-#auth_version_default = 'v1'
-
 def _persist( export, rcfile ):
     f = open( rcfile, 'w' )
     logging.debug( "writing to {}".format( rcfile ) )
@@ -88,7 +83,6 @@ shell_output = {
     'csh': csh,
     'tcsh': csh
 }
-
 
 class LocalParser( argparse.ArgumentParser ):
     def error( self, message ):
