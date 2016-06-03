@@ -207,8 +207,13 @@ def verify(acct_name, username):
     binddn = request.authorization.username
     bindpw = request.authorization.password
 
+    # first see if there is a specific swift group that controls access
     is_ok, message, status_code = validate(
-        username, acct_name, binddn, bindpw, '_grp')
+        username, acct_name, binddn, bindpw, '_swift_grp')
+    # but if _swift_grp is not found use the default group ending _grp
+    if message.startswith('No directory group for account'):
+        is_ok, message, status_code = validate(
+            username, acct_name, binddn, bindpw, '_grp')
 
     if is_ok:
         server.logger.debug("returning credential")
