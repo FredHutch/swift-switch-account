@@ -75,11 +75,12 @@ def test(acct_name='test_a'):
     r = jsonify( cred )
     return r
 
-def validate( username, acct_name, binddn, bindpw ):
+def validate( username, acct_name, binddn, bindpw, grp_suffix):
     logging.debug( 'verifying user %s for account %s', username, acct_name )
     # Authentication assumed good at this point... now lookup 
     # account name/group combination in ad and check membership:
     # format: user_f_grp
+    # grp_suffix is either _swift_grp or _grp
     base = config.base
     scope = ldap.SCOPE_SUBTREE
     connect_as = "%s@fhcrc.org" % binddn
@@ -107,7 +108,7 @@ def validate( username, acct_name, binddn, bindpw ):
     server.logger.debug( "located DN for principal" )
 
     # get DN for requested group
-    group_name = "%s_grp" % acct_name
+    group_name = acct_name + grp_suffix
     filter = "(&(sAMAccountName=%s)(objectCategory=group))" % group_name
     results = conn.search_s( base, scope, filter )
     if len(results) == 2:
@@ -169,8 +170,13 @@ def auth(acct_name):
     binddn = request.authorization.username
     bindpw = request.authorization.password
     username = binddn
+    # first see if there is a specific swift group that controls access
     is_ok, message, status_code = validate(
-        username, acct_name, binddn, bindpw )
+        username, acct_name, binddn, bindpw, '_swift_grp')
+    # but if _swift_grp is not found use the default group ending _grp
+    if message.startswith('No directory group for account'):
+        is_ok, message, status_code = validate(
+            username, acct_name, binddn, bindpw, '_grp')
 
     if is_ok:
         server.logger.debug("returning credential")
@@ -202,7 +208,7 @@ def verify(acct_name, username):
     bindpw = request.authorization.password
 
     is_ok, message, status_code = validate(
-        username, acct_name, binddn, bindpw )
+        username, acct_name, binddn, bindpw, '_grp')
 
     if is_ok:
         server.logger.debug("returning credential")
