@@ -1,3 +1,9 @@
+swift-switch-account (0.2.1) trusty; urgency=low
+
+    Added additonal logic to search for a group ending `_swift_grp`
+
+ -- Dirk Petersen <petersen@fredhutch.org> Wed, 08 Jun 2016 10:53:01 -0700
+
 swift-switch-account (0.2.0-4) trusty; urgency=low
 
     removed prompting for passwords
