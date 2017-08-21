@@ -8,9 +8,12 @@
 
 # path to csv file containing key data
 keyfile = '/path/to/keys.csv'
+aws_keyfile = '/path/to/aws_keys.csv'
 #
 # Order of account, password, and key in file as tuple/list
 key_fields = ('account','password','key')
+aws_keyfields = ('hutchnetid', 'access_key', 'secret_key')
+
 
 # SERVER CONFIGURATION
 #
@@ -32,6 +35,3 @@ base = "dc=base,dc=org"
 
 # URI for LDAP server
 ldap_url = "ldaps://ldap.foo.org"
-
-
-

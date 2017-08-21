@@ -77,7 +77,7 @@ def test(acct_name='test_a'):
 
 def validate( username, acct_name, binddn, bindpw, grp_suffix):
     logging.debug( 'verifying user %s for account %s', username, acct_name )
-    # Authentication assumed good at this point... now lookup 
+    # Authentication assumed good at this point... now lookup
     # account name/group combination in ad and check membership:
     # format: user_f_grp
     # grp_suffix is either _swift_grp or _grp
@@ -92,7 +92,7 @@ def validate( username, acct_name, binddn, bindpw, grp_suffix):
         server.logger.error(
             'error connecting to ldap server {}'.format(config.ldap_url)
         )
-        message = 'Server Error: unable to contact ldap' 
+        message = 'Server Error: unable to contact ldap'
         status_code = 500
         return False, message, status_code
 
@@ -200,6 +200,27 @@ def auth(acct_name):
         return r
 
 
+@server.route("/aws/account")
+@requires_auth
+def get_aws_creds():
+    server.logger.setLevel(logging.DEBUG)
+    username =  request.authorization.username
+
+    with open( config.aws_keyfile, 'rb' ) as keyfile:
+        creds = csv.DictReader(keyfile, fieldnames = config.aws_keyfields )
+        for cred in creds:
+            if cred['hutchnetid'] == username:
+                del cred['hutchnetid']
+                r = jsonify(cred)
+                r.status_code = 200
+                return r
+        if r == "":
+            r = jsonify(
+                message='HutchNET ID {} not found on server'.format( username ) )
+            r.status_code = 404
+            return r
+
+
 @server.route("/swift/account/access/<acct_name>/<username>")
 @requires_auth
 def verify(acct_name, username):
@@ -238,4 +259,3 @@ def verify(acct_name, username):
         r = jsonify( message = message )
         r.status_code = status_code
         return r
-
