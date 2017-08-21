@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 Command-line client of the RESTful service at
 https://toolbox.fhcrc.org/sw2srv/aws/account
