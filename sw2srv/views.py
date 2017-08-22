@@ -217,11 +217,10 @@ def get_aws_creds():
                 r = jsonify(cred)
                 r.status_code = 200
                 return r
-        if r == "":
-            r = jsonify(
-                message='HutchNET ID {} not found on server'.format( username ) )
-            r.status_code = 404
-            return r
+    r = jsonify(
+        message='HutchNET ID {} not found on server'.format( username ) )
+    r.status_code = 404
+    return r
 
 
 @server.route("/swift/account/access/<acct_name>/<username>")
