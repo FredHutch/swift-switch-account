@@ -21,6 +21,9 @@ def check_auth(username, password):
 
     username = '%s@fhcrc.org' % username
 
+    if not password:
+        return False
+
     try:
         conn = ldap.initialize( config.ldap_url )
         conn.set_option( ldap.OPT_REFERRALS, 0 )
