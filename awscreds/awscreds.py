@@ -96,4 +96,11 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     print("Configuration written to {}.".format(args.config_file))
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Exit !')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
