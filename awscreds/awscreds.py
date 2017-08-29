@@ -7,15 +7,17 @@ Which returns the AWS credentials of the authenticated user.
 This script will add those credentials to the user's ~/.aws/config file.
 """
 
+from __future__ import print_function # needed for end="" to work in py2.7
+
 # standard library imports
 import sys
 import argparse
 import os
 import getpass
-import configparser
 
-# third-party imports
+# third-party imports; we assume these are available.
 import requests
+from six.moves import ConfigParser as ConfigParser
 
 def main(): # pylint: disable=too-many-branches, too-many-statements
     'Do all the work.'
@@ -31,8 +33,8 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
                                              '.aws',
                                              'config'),
                         help='AWS credential file.')
-    configparser.DEFAULTSECT = 'default'
-    parser.add_argument('--section', default=configparser.DEFAULTSECT,
+    ConfigParser.DEFAULTSECT = 'default'
+    parser.add_argument('--section', default=ConfigParser.DEFAULTSECT,
                         help='Section of credential file.')
     args, unknown = parser.parse_known_args()
     if unknown:
@@ -66,10 +68,10 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     if os.path.isdir(args.config_file):
         print("{} is a directory; should be a file!")
         sys.exit(1)
-    config = configparser.ConfigParser()
+    config = ConfigParser.ConfigParser()
     if os.path.exists(args.config_file):
         config.read(args.config_file)
-    if args.section == configparser.DEFAULTSECT:
+    if args.section == ConfigParser.DEFAULTSECT:
         has_section = bool(config.defaults())
     else:
         has_section = config.has_section(args.section)
@@ -83,7 +85,7 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
         else:
             print("exiting.")
             sys.exit(1)
-    if not args.section == configparser.DEFAULTSECT:
+    if not args.section == ConfigParser.DEFAULTSECT:
         config.add_section(args.section)
     config.set(args.section, 'aws_access_key_id', access_key)
     config.set(args.section, 'aws_secret_access_key', secret_key)
@@ -103,4 +105,4 @@ if __name__ == '__main__':
         try:
             sys.exit(0)
         except SystemExit:
-            os._exit(0)
+            os._exit(0) # pylint: disable=protected-access
