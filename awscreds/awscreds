@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Make a symlink to this script
-# (or copy it) to /app/bin. 
+# (or copy it) to /app/bin.
 
 #
 source /etc/profile.d/fh_path.sh
@@ -13,5 +13,5 @@ unset PYTHONPATH
 unset PYTHONUSERBASE
 unset PYTHONHOME
 
-module load Python
+ml python3 > /dev/null 2>&1
 python3 ${rundir}/${scriptname}.py $@
