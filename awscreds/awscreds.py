@@ -17,7 +17,7 @@ import getpass
 
 # third-party imports; we assume these are available.
 import requests
-from six.moves import ConfigParser as ConfigParser
+from six.moves import configparser as ConfigParser
 
 def main(): # pylint: disable=too-many-branches, too-many-statements
     'Do all the work.'
