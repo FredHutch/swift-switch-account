@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Command-line client of the RESTful service at
@@ -7,14 +7,12 @@ Which returns the AWS credentials of the authenticated user.
 This script will add those credentials to the user's ~/.aws/config file.
 """
 
-from __future__ import print_function # python 2/3 compatibility
-
 # standard library imports
 import sys
 import argparse
 import os
 import getpass
-import ConfigParser
+import configparser
 
 # third-party imports
 import requests
