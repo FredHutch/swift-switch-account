@@ -31,8 +31,8 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
                                              '.aws',
                                              'config'),
                         help='AWS credential file.')
-    ConfigParser.DEFAULTSECT = 'default'
-    parser.add_argument('--section', default=ConfigParser.DEFAULTSECT,
+    configparser.DEFAULTSECT = 'default'
+    parser.add_argument('--section', default=configparser.DEFAULTSECT,
                         help='Section of credential file.')
     args, unknown = parser.parse_known_args()
     if unknown:
@@ -66,10 +66,10 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     if os.path.isdir(args.config_file):
         print("{} is a directory; should be a file!")
         sys.exit(1)
-    config = ConfigParser.ConfigParser()
+    config = configparser.configparser()
     if os.path.exists(args.config_file):
         config.read(args.config_file)
-    if args.section == ConfigParser.DEFAULTSECT:
+    if args.section == configparser.DEFAULTSECT:
         has_section = bool(config.defaults())
     else:
         has_section = config.has_section(args.section)
@@ -83,7 +83,7 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
         else:
             print("exiting.")
             sys.exit(1)
-    if not args.section == ConfigParser.DEFAULTSECT:
+    if not args.section == configparser.DEFAULTSECT:
         config.add_section(args.section)
     config.set(args.section, 'aws_access_key_id', access_key)
     config.set(args.section, 'aws_secret_access_key', secret_key)
