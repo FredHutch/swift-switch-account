@@ -66,7 +66,7 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     if os.path.isdir(args.config_file):
         print("{} is a directory; should be a file!")
         sys.exit(1)
-    config = configparser.configparser()
+    config = configparser.ConfigParser()
     if os.path.exists(args.config_file):
         config.read(args.config_file)
     if args.section == configparser.DEFAULTSECT:
