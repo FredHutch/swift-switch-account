@@ -32,7 +32,7 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     parser.add_argument('--config-file',
                         default=os.path.join(os.getenv('HOME'),
                                              '.aws',
-                                             'config'),
+                                             'credentials'),
                         help='AWS credential file.')
     configparser.DEFAULTSECT = 'default'
     parser.add_argument('--section', default=configparser.DEFAULTSECT,
