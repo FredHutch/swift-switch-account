@@ -20,7 +20,7 @@ import requests
 import six
 from six.moves import configparser
 
-def main(): # pylint: disable=too-many-branches, too-many-statements
+def main(): # pylint: disable=too-many-branches, too-many-statements, too-many-locals
     'Do all the work.'
     url = "https://toolbox.fhcrc.org/sw2srv/aws/account"
 
@@ -29,11 +29,10 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
         argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--force', action='store_true',
                         help='Overwrite existing sections of file.')
-    parser.add_argument('--config-file',
+    parser.add_argument('--config-dir',
                         default=os.path.join(os.getenv('HOME'),
-                                             '.aws',
-                                             'credentials'),
-                        help='AWS credential file.')
+                                             '.aws'),
+                        help='Directory to write AWS config/credentials files.')
     configparser.DEFAULTSECT = 'default'
     parser.add_argument('--section', default=configparser.DEFAULTSECT,
                         help='Section of credential file.')
@@ -41,9 +40,12 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     if unknown:
         print("Unknown arguments are present!")
         sys.exit(1)
-    if not args.section == 'default':
-        args.section = "profile {}".format(args.section)
 
+    def section(filename):
+        """determine section name"""
+        if args.section == 'default' or filename.endswith("credentials"):
+            return args.section
+        return "profile {}".format(args.section)
 
     username = os.getenv('USER')
     password = getpass.getpass("Enter password for {}: ".format(username))
@@ -59,44 +61,62 @@ def main(): # pylint: disable=too-many-branches, too-many-statements
     access_key = result['access_key']
     secret_key = result['secret_key']
 
-    configdir = os.path.dirname(args.config_file)
+    configdir = args.config_dir
+    config_file = os.path.join(configdir, "config")
+    credentials_file = os.path.join(configdir, "credentials")
+
+
     if not os.path.isdir(configdir):
         if os.path.exists(configdir):
             print("{} exists but is not a directory!")
             sys.exit(1)
-        os.mkdir(configdir)
+        os.makedirs(configdir)
 
-    if os.path.isdir(args.config_file):
-        print("{} is a directory; should be a file!")
-        sys.exit(1)
     config = configparser.ConfigParser()
-    if os.path.exists(args.config_file):
-        config.read(args.config_file)
-    if six.PY2 and args.section == configparser.DEFAULTSECT:
-        has_section = bool(config.defaults())
-    else:
-        has_section = config.has_section(args.section)
-    if has_section:
-        # TODO better help here....
-        print("Config file already has section '{}', ".format(args.section),
-              end="")
-        if args.force:
-            print("overwriting....")
-            config.remove_section(args.section)
+    credentials = configparser.ConfigParser()
+    if os.path.exists(config_file):
+        config.read(config_file)
+    if os.path.exists(credentials_file):
+        credentials.read(credentials_file)
+
+    def create_section(parser, filename):
+        """does file have section?"""
+        if six.PY2 and args.section == configparser.DEFAULTSECT:
+            has_section = bool(parser.defaults())
         else:
-            print("exiting.")
-            sys.exit(1)
-    if six.PY3 or not args.section == configparser.DEFAULTSECT:
-        config.add_section(args.section)
-    config.set(args.section, 'aws_access_key_id', access_key)
-    config.set(args.section, 'aws_secret_access_key', secret_key)
-    config.set(args.section, 'region', "us-west-2")
+            has_section = parser.has_section(section(filename))
+        if has_section:
+            print("File {} already has section '{}', ".format(filename,
+                                                              section(filename)),
+                  end="")
+            if args.force:
+                print("overwriting....")
+                parser.remove_section(section(filename))
+            else:
+                print("exiting.")
+                sys.exit(1)
 
-    with open(args.config_file, "w") as filehandle:
+
+    create_section(config, config_file)
+    create_section(credentials, credentials_file)
+
+    if six.PY3 or not section(config_file) == configparser.DEFAULTSECT:
+        config.add_section(section(config_file))
+    if six.PY3 or not section(credentials_file) == configparser.DEFAULTSECT:
+        credentials.add_section(section(credentials_file))
+    credentials.set(section(credentials_file), 'aws_access_key_id', access_key)
+    credentials.set(section(credentials_file), 'aws_secret_access_key', secret_key)
+    config.set(section(config_file), 'region', "us-west-2")
+
+    with open(config_file, "w") as filehandle:
         config.write(filehandle)
-    os.chmod(args.config_file, 0o600) # python 2/3 compatibility
+    with open(credentials_file, "w") as filehandle:
+        credentials.write(filehandle)
+    os.chmod(credentials_file, 0o600) # python 2/3 compatibility
+    os.chmod(config_file, 0o600) # python 2/3 compatibility
 
-    print("Configuration written to {}.".format(args.config_file))
+    print("Configuration written to {}.".format(config_file))
+    print("Credentials written to {}.".format(credentials_file))
 
 if __name__ == '__main__':
     try:
