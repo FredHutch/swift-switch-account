@@ -93,7 +93,7 @@ def main(): # pylint: disable=too-many-branches, too-many-statements, too-many-l
                 print("overwriting....")
                 parser.remove_section(section(filename))
             else:
-                print("exiting. Use --force to overwrite.")
+                print("exiting.\nUse --force to overwrite.")
                 sys.exit(1)
 
 
