@@ -113,7 +113,7 @@ max_queue_size = 10000
 multipart_threshold = 64MB
 multipart_chunksize = 16MB
 """
-    config.set(args.section, "s3", s3conf)
+    config.set(section(config_file), "s3", s3conf)
 
     with open(config_file, "w") as filehandle:
         config.write(filehandle)
