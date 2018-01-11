@@ -4,4 +4,4 @@
 # (or copy it) to /app/bin.
 
 
-/app/easybuild/software/Python/3.6.4-foss-2016b-fh1/bin/python3 /app/bin/awscreds.py
+/app/easybuild/software/Python/3.6.4-foss-2016b-fh1/bin/python3 /app/bin/awscreds.py $*
