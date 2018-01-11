@@ -3,15 +3,5 @@
 # Make a symlink to this script
 # (or copy it) to /app/bin.
 
-#
-source /etc/profile.d/fh_path.sh
-scriptname=${0##*/}
-rundir=$( dirname $0 )
-#
-# remove local user-customisations to python behavior
-unset PYTHONPATH
-unset PYTHONUSERBASE
-unset PYTHONHOME
 
-ml python3 > /dev/null 2>&1
-python3 ${rundir}/${scriptname}.py $@
+/app/easybuild/software/Python/3.6.4-foss-2016b-fh1/bin/python3 /app/bin/awscreds.py
