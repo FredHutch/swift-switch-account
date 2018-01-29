@@ -12,6 +12,16 @@ import ldap
 import logging
 import csv
 
+
+def check_aws_auth(access_key, secret_key):
+    """Allows authenticating with AWS credentials"""
+    with open(config.aws_keyfile, 'rb') as keyfile:
+        creds = csv.DictReader(keyfile, fieldnames=config.aws_keyfields)
+        for cred in creds:
+            if access_key == cred['access_key']  and secret_key == cred['secret_key']:
+                return True
+    return False
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
@@ -54,6 +64,18 @@ def requires_auth(f):
         if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
         return f(*args, **kwargs)
+    return decorated
+
+
+def requires_aws_auth(func):
+    "wrap a route with aws authentication"
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        "function to wrap"
+        auth = request.authorization
+        if not auth or not check_aws_auth(auth.username, auth.password):
+            return authenticate()
+        return func(*args, **kwargs)
     return decorated
 
 def principal_in_group( conn, princ, group ):
@@ -124,7 +146,6 @@ def validate( username, acct_name, binddn, bindpw, grp_suffix):
                 group_managed_by = False
             else:
                 raise e
-                sys.exit(1)
     else:
         message = 'No directory group for account {}'.format(acct_name)
         status_code = 404
@@ -202,6 +223,23 @@ def auth(acct_name):
         r.status_code = status_code
         return r
 
+
+@server.route("/aws/get_hutchnet_id")
+@requires_aws_auth
+def get_hutchnet_id_from_aws_creds():
+    "once user is logged in, give them hutchnet id associated w/their login creds"
+    access_key = request.authorization.username
+    secret_key = request.authorization.password
+    with open(config.aws_keyfile, 'rb') as keyfile:
+        creds = csv.DictReader(keyfile, fieldnames=config.aws_keyfields)
+        for cred in creds:
+            if access_key == cred['access_key']  and secret_key == cred['secret_key']:
+                res = jsonify(cred['hutchnetid'])
+                res.status_code = 200
+                return res
+    res = jsonify("unable to find hutchnet ID for these credentials")
+    res.status_code = 404
+    return res
 
 @server.route("/aws/account")
 @requires_auth
