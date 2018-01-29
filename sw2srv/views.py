@@ -234,7 +234,7 @@ def get_hutchnet_id_from_aws_creds():
         creds = csv.DictReader(keyfile, fieldnames=config.aws_keyfields)
         for cred in creds:
             if access_key == cred['access_key']  and secret_key == cred['secret_key']:
-                res = jsonify(cred['hutchnetid'])
+                res = jsonify(message=cred['hutchnetid'])
                 res.status_code = 200
                 return res
     res = jsonify("unable to find hutchnet ID for these credentials")
