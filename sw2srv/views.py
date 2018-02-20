@@ -8,6 +8,7 @@ from flask import request, Response, jsonify
 from flask import render_template, redirect
 from functools import wraps
 
+import json
 import ldap
 import logging
 import csv
@@ -299,3 +300,21 @@ def verify(acct_name, username):
         r = jsonify( message = message )
         r.status_code = status_code
         return r
+
+
+
+@server.route("/get_depts", methods=['GET'])
+# @support_jsonp
+def get_depts():
+    with open(config.depts_file) as depts_file:
+        obj = json.load(depts_file)
+    keys = obj.keys()
+    depts = []
+    for key in keys:
+        key = key.replace("_grp", "")
+        segs = key.split("_")
+        if len(segs) < 5:
+            depts.append(key)
+    depts.sort()
+    ret = "callback(" + json.dumps(depts) + ")"
+    return Response(ret, mimetype="application/json")
