@@ -1,14 +1,11 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
-requests = "*"
+requests = "==2.20.0"
 six = "*"
-
+urllib3 = "==1.23"
 
 [dev-packages]
