@@ -107,13 +107,6 @@ def main(): # pylint: disable=too-many-branches, too-many-statements, too-many-l
     credentials.set(section(credentials_file), 'aws_access_key_id', access_key)
     credentials.set(section(credentials_file), 'aws_secret_access_key', secret_key)
     config.set(section(config_file), 'region', "us-west-2")
-    s3conf = """
-max_concurrent_requests = 100
-max_queue_size = 10000
-multipart_threshold = 64MB
-multipart_chunksize = 16MB
-"""
-    config.set(section(config_file), "s3", s3conf)
 
     with open(config_file, "w") as filehandle:
         config.write(filehandle)
