@@ -171,7 +171,7 @@ def auth(acct_name):
 # @requires_aws_auth
 def get_hutchnet_id_from_aws_creds():
     "once user is logged in, give them hutchnet id associated w/their login creds"
-      message = """
+    message = """
 This URL has been deprecated. For assistance with your AWS account, please
 contact helpdesk@fredhutch.org.
     """
@@ -180,7 +180,7 @@ contact helpdesk@fredhutch.org.
 @server.route("/aws/account")
 # @requires_auth
 def get_aws_creds():
-      message = """
+    message = """
 This URL has been deprecated. For assistance with your AWS account, please
 contact helpdesk@fredhutch.org.
     """
