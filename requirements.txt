@@ -2,7 +2,7 @@ appnope==0.1.0
 astroid==1.5.3
 backports.functools-lru-cache==1.4
 backports.shutil-get-terminal-size==1.0.0
-certifi==2018.11.29
+certifi==2022.12.7
 chardet==3.0.4
 click==6.7
 configparser==3.5.0
